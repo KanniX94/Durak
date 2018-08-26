@@ -13,5 +13,32 @@ case class Player(name: String) extends PlayerInterface {
    def loose(): String = {
       return s"$name ist ein Durak!"
    }
+
+   def pushCard(card: Card): Card = {
+      //Was passiert, wenn Karte geschoben wurde?
+      // ...
+
+      dropCard(card)
+      return null
+   }
+
+   def beatCard(card: Card): Card = {
+      //Was passiert, wenn Karte geschlagen wurde?
+      // ...
+
+      dropCard(card)
+      return null
+   }
+
+   def dropCard(card: Card): Card = {
+      for (i <- 0 to cardOnHand.length - 1) {
+         if (cardOnHand(i).name == card.name) {
+            val tmpCard = cardOnHand(i)
+            cardOnHand.remove(i)
+            return tmpCard
+         }
+      }
+      return null
+   }
 }
 
