@@ -17,6 +17,11 @@ case class Player(name: String) extends PlayerInterface {
    def pushCard(card: Card): Card = {
       //Was passiert, wenn Karte geschoben wurde?
       // ...
+     for (i <- 0 to cardOnHand.length - 1) {
+       if (cardOnHand(i).name == card.name) {
+
+       }
+     }
 
       dropCard(card)
       return null

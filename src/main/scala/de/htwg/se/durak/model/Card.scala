@@ -1,5 +1,7 @@
-package de.htwg.se.durak.model
+package de.htwg.se.durak.model.CardInterface
+import de.htwg.se.durak.model.CardInterface
 
-trait Card {
-  val name: String
+case class Card(name: String, v: Integer, s: String) extends CardInterface {
+  value = v
+  symbol = s
 }
