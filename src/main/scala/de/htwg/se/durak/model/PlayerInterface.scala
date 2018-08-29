@@ -2,10 +2,8 @@ package de.htwg.se.durak.model
 import scala.collection.mutable.ArrayBuffer
 
 trait PlayerInterface {
-  var cardOnHand: ArrayBuffer[Card] = null
+  var cardOnHand: ArrayBuffer[Item] = null
 
-  def beatCard: Boolean
-  def pushCard: Boolean
-  def takeCard: Boolean
-  def dropCard: Card
+  def beatCard(item: Item): Item
+  def pushCard(item: Item): Item
 }

@@ -1,11 +1,11 @@
 package de.htwg.se.durak.model
 import scala.collection.mutable.ArrayBuffer
-import de.htwg.se.durak.model.{ PlayerInterface, Card, Player}
+import de.htwg.se.durak.model.{ PlayerInterface, Item, Player}
 
 case class Player(name: String) extends PlayerInterface {
    override def toString:String = name
 
-   cardOnHand = ArrayBuffer[Card]()
+   cardOnHand = ArrayBuffer[Item]()
    def win(): String = {
       return s"$name hat gewonnen und verlaesst das Spiel!"
    }
