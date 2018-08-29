@@ -40,7 +40,7 @@ case class Deck() extends DeckInterface[Item] {
     Card("Koenig Caro", 13, "C"),
     Card("Ass Caro", 14, "C")
   )
-
+  
   override def dealOut(): Item = {
     return null
   }
