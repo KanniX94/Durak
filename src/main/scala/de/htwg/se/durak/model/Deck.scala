@@ -40,7 +40,29 @@ case class Deck() extends DeckInterface[Item] {
     Card("Koenig Caro", 13, "C"),
     Card("Ass Caro", 14, "C")
   )
-  
+
+  // Erstelle ein leeres Deck
+  var deck = ArrayBuffer[Item]()
+  var trumpCard = determineTrump()
+
+  mixDeck()
+
+  // Mische ein neues Deck
+  def mixDeck(): Unit = {
+    deck.clear()
+    deck ++= cards
+    util.Random.shuffle(deck)
+  }
+
+  // Ermittle zufaelligen Trumpf
+  def determineTrump(): Unit = {
+    val r = scala.util.Random
+    val tmp = r.nextInt(deck.length + 1)
+    val trump = deck(tmp)
+    deck.remove(tmp)
+    return trump
+  }
+
   override def dealOut(): Item = {
     return null
   }
