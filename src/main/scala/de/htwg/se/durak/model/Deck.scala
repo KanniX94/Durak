@@ -47,10 +47,14 @@ case class Deck() extends DeckInterface[Item] {
 
   mixDeck()
 
-  // Mische ein neues Deck
-  def mixDeck(): Unit = {
+  // Fuelle neues Deck mit Karten
+  def fillDeck(): Unit = {
     deck.clear()
     deck ++= cards
+  }
+
+  // Mische das Deck
+  def mixDeck(): Unit = {
     util.Random.shuffle(deck)
   }
 
@@ -60,10 +64,21 @@ case class Deck() extends DeckInterface[Item] {
     val tmp = r.nextInt(deck.length + 1)
     val trump = deck(tmp)
     deck.remove(tmp)
-    return trump
+    trump
   }
 
   override def dealOut(): Item = {
+    return null
+  }
+
+  def takeCard(item: Item): Item = {
+    //Karte ziehen, bis alle Spieler 6 Karten auf der Hand haben
+    // Oder lieber vom Player aus steuern?
+    // ...
+    return null
+  }
+
+  def dropCard(item: Item): Item = {
     return null
   }
 }
