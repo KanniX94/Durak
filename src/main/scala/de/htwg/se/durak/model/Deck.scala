@@ -44,7 +44,6 @@ case class Deck() extends DeckInterface[Item] {
   // Erstelle ein leeres Deck
   var deck = ArrayBuffer[Item]()
   var trumpCard = determineTrump()
-
   mixDeck()
 
   // Fuelle neues Deck mit Karten
