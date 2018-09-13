@@ -1,13 +1,17 @@
 package de.htwg.se.durak
 
 import de.htwg.se.durak.aview.tui.Tui
+import de.htwg.se.durak.controller.Controller
+import scala.io.StdIn
 
 object durakGame {
   def main(args: Array[String]): Unit = {
-    val tui = new Tui()
+    val c = new Controller()
+    val tui = new Tui(c)
 
-    while(true){
-
+    while (true) {
+      val input = StdIn.readLine()
+      tui.interpret(input)
     }
   }
 }
