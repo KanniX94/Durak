@@ -2,9 +2,9 @@ package de.htwg.se.durak.model
 
 import de.htwg.se.durak.model.CardInterface.Card
 import scala.collection.mutable.ArrayBuffer
-import de.htwg.se.durak.model.{Item, PlayerInterface, Player}
+import de.htwg.se.durak.model.{Item, PlayerInterface, Player, DeckInterface}
 
-case class Player(name: String) extends PlayerInterface {
+case class Player(name: String, cardOnField: ArrayBuffer[Item]) extends PlayerInterface {
   override def toString: String = name
 
   cardOnHand = ArrayBuffer[Item]()
@@ -18,39 +18,6 @@ case class Player(name: String) extends PlayerInterface {
   }
 
   def putCard(item: Item): Item = ???
-
-  def pushCard(item: Item): Item = {
-    //Was passiert, wenn Karte geschoben wurde?
-    // ...
-    for (i <- 0 to cardOnHand.length - 1) {
-      for (j <- 0 to cardOnField.length - 1) {
-        if (cardOnHand(i).asInstanceOf[Card].value == item.asInstanceOf[Card].value) {
-          // Karte mit gleichem Wert wurde gelegt
-          // Karten bzw. temporaerer Buffer mit gelegten Karten wird an naechsten Player uebertragen
-          // ...
-
-          return null // Hier einen ArrayBuffer returnen, um gespielte Karten zum naechsten Spieler zu uebergeben
-        }
-      }
-    }
-
-    dropCard(card)
-    return "Mit der Karte kannst du nicht schieben!"
-  }
-
-  def beatCard(card: Card): Card = {
-    //Was passiert, wenn Karte geschlagen wurde?
-    // ...
-    for (i <- 0 to cardOnHand.length - 1) {
-      if (cardOnHand(i).asInstanceOf[Card].value > card.value) {
-        // Karte wurde mit hoeher wertiger Karte geschlagen
-
-      }
-    }
-
-    dropCard(card)
-    return null
-  }
 
   def pickCard(card: Card): Card = {
     return null
@@ -66,5 +33,11 @@ case class Player(name: String) extends PlayerInterface {
     }
     return null
   }
+
+  override def beatCard(item: Item): Item = ???
+
+  override def pushCard(item: Item): Item = ???
+
+  override def pickCard(item: Item): Item = ???
 }
 

@@ -5,7 +5,7 @@ import de.htwg.se.durak.model.CardInterface.Card
 import scala.collection.mutable.ArrayBuffer
 import de.htwg.se.durak.model.{DeckInterface, Item}
 
-case class Deck() extends DeckInterface[Item] {
+case class Deck() extends DeckInterface[Card] {
   var cards = Array[Card](
     Card("7 Piek", 7, "P"),
     Card("8 Piek", 8, "P"),
@@ -42,8 +42,11 @@ case class Deck() extends DeckInterface[Item] {
   )
 
   // Erstelle ein leeres Deck
-  var deck = ArrayBuffer[Item]()
-  var trumpCard = determineTrump()
+  var deck = ArrayBuffer[Card]()
+
+  // Ermittlere einen zufaelligen Trumpf
+  override var trumpCard: Card = determineTrump()
+
   mixDeck()
 
   // Fuelle neues Deck mit Karten
@@ -58,7 +61,7 @@ case class Deck() extends DeckInterface[Item] {
   }
 
   // Ermittle zufaelligen Trumpf
-  def determineTrump(): Unit = {
+  def determineTrump(): Card = {
     val r = scala.util.Random
     val tmp = r.nextInt(deck.length + 1)
     val trump = deck(tmp)
@@ -80,4 +83,34 @@ case class Deck() extends DeckInterface[Item] {
   def dropCard(item: Item): Item = {
     return null
   }
+
+  // Sind alle Karten auf dem Feld gleich, sodass geschoben werden kann?
+  def canPushCard(cardOnField: ArrayBuffer[Item]): Boolean = {
+    var equalCards = cardOnField(0).asInstanceOf[Card].value
+    for (i <- 1 to cardOnField.length - 1) {
+      if (i.asInstanceOf[Card].value != equalCards) {
+        return false
+      }
+      equalCards = i.asInstanceOf[Card].value
+    }
+    true
+  }
+
+  // Kann die Karte geschlagen werden?
+  def canBeatCard(cardFromField: Card, cardFromHand: Card): Boolean = {
+    if ((cardFromHand.value > cardFromField.value &&
+      cardFromHand.symbol == cardFromField.symbol) ||
+      (!isTrump(cardFromField) && isTrump(cardFromHand)) ||
+      (isTrump(cardFromHand) && isTrump(cardFromField) &&
+        cardFromHand.value > cardFromField.value)) {
+      true
+    } else {
+      false
+    }
+
+    // Ist gelegte Karte eine Trumpfkarte?
+    def isTrump(card: Card): Boolean = if (card.symbol == trumpCard.symbol) true else false
+  }
+
+  override def pickCard(item: Item): Item = ???
 }
