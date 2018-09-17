@@ -62,9 +62,7 @@ case class Deck() extends DeckInterface[Card] {
   def determineTrump(): Card = {
     val r = scala.util.Random
     val tmp = r.nextInt(deck.size + 1)
-    val trump = deck(tmp)
-    deck.remove(tmp)
-    trump
+    deck(tmp)
   }
 
   override def dealOut(): Item = {
