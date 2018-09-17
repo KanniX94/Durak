@@ -4,10 +4,10 @@ import de.htwg.se.durak.model.CardInterface.Card
 import scala.collection.mutable.ArrayBuffer
 import de.htwg.se.durak.model.{Item, PlayerInterface, Player, DeckInterface}
 
-case class Player(name: String, cardOnField: ArrayBuffer[Item]) extends PlayerInterface {
+case class Player(name: String, cardOnField: ArrayBuffer[Card]) extends PlayerInterface {
   override def toString: String = name
 
-  cardOnHand = ArrayBuffer[Item]()
+  cardOnHand = ArrayBuffer[Card]()
 
   def win(): String = {
     return s"$name hat gewonnen und verlaesst das Spiel!"
@@ -17,7 +17,7 @@ case class Player(name: String, cardOnField: ArrayBuffer[Item]) extends PlayerIn
     return s"$name ist ein Durak!"
   }
 
-  def putCard(item: Item): Item = ???
+  def putCard(card: Card): Card = ???
 
   def pickCard(card: Card): Card = {
     return null
@@ -34,10 +34,9 @@ case class Player(name: String, cardOnField: ArrayBuffer[Item]) extends PlayerIn
     return null
   }
 
-  override def beatCard(item: Item): Item = ???
+  override def beatCard(card: Card): Card = ???
 
-  override def pushCard(item: Item): Item = ???
+  override def pushCard(card: Card): Card = ???
 
-  override def pickCard(item: Item): Item = ???
 }
 

@@ -5,19 +5,19 @@ import de.htwg.se.durak.model.CardInterface.Card
 import scala.collection.mutable.ArrayBuffer
 
 trait PlayerInterface {
-  var cardOnHand: ArrayBuffer[Item] = null
+  var cardOnHand: ArrayBuffer[Card] = null
 
   // Karte auf das Feld legen (ArrayBuffer fuellen und an naechsten Spieler uebergeben)
-  def putCard(item: Item): Item
+  def putCard(card: Card): Card
 
   // Karte schlagen
-  def beatCard(item: Item): Item
+  def beatCard(card: Card): Card
 
   // Karte schieben
-  def pushCard(item: Item): Item
+  def pushCard(card: Card): Card
 
   // Karten aufnehmen (wenn nicht geschlagen werden kann)
-  def pickCard(item: Item): Item
+  def pickCard(card: Card): Card
 
 
 }
