@@ -1,9 +1,8 @@
-package de.htwg.se.durak.model
+package de.htwg.se.durak.model.exactImpl
 
-import de.htwg.se.durak.model.CardInterface.Card
+import de.htwg.se.durak.model.{DeckInterface, Item}
 
 import scala.collection.mutable.ArrayBuffer
-import de.htwg.se.durak.model.{DeckInterface, Item}
 
 case class Deck() extends DeckInterface[Card] {
   var cards = Array[Card](
@@ -47,6 +46,7 @@ case class Deck() extends DeckInterface[Card] {
   // Ermittlere einen zufaelligen Trumpf
   override var trumpCard: Card = determineTrump()
 
+  fillDeck()
   mixDeck()
 
   // Fuelle neues Deck mit Karten

@@ -1,7 +1,7 @@
 package de.htwg.se.durak.controller
 
-import de.htwg.se.durak.model.CardInterface.Card
-import de.htwg.se.durak.model.{Deck, PlayerInterface}
+import de.htwg.se.durak.model.exactImpl.Card
+import de.htwg.se.durak.model.PlayerInterface
 
 import scala.collection.mutable.ArrayBuffer
 

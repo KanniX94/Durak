@@ -1,10 +1,10 @@
-package de.htwg.se.durak.model
+package de.htwg.se.durak.model.exactImpl
 
-import de.htwg.se.durak.model.CardInterface.Card
+import de.htwg.se.durak.model.{Item, PlayerInterface}
+
 import scala.collection.mutable.ArrayBuffer
-import de.htwg.se.durak.model.{Item, PlayerInterface, Player, DeckInterface}
 
-case class Player(name: String, cardOnField: ArrayBuffer[Card]) extends PlayerInterface {
+case class Player(name: String) extends PlayerInterface {
   override def toString: String = name
 
   cardOnHand = ArrayBuffer[Card]()
