@@ -131,3 +131,7 @@ case class Deck() extends DeckInterface[Card] {
 
   override def pickCard(item: Item): Item = ???
 }
+
+object Deck {
+  val canPushCard: Unit = ???
+}

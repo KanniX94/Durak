@@ -8,6 +8,13 @@ case class Player(name: String) extends PlayerInterface {
   override def toString: String = name
 
   cardOnHand = ArrayBuffer[Card]()
+  cardOnField = ArrayBuffer[Card]()
+
+  def getCardOnField(cards: ArrayBuffer[Card]): Unit = {
+    cardOnField = cards
+  }
+
+  def moveCardOnField(): Unit = cardOnField.clear()
 
   def win(): String = {
     return s"$name hat gewonnen und verlaesst das Spiel!"
@@ -36,7 +43,8 @@ case class Player(name: String) extends PlayerInterface {
 
   override def beatCard(card: Card): Card = ???
 
-  override def pushCard(card: Card): Card = ???
+  def pushCard(card: Card): Unit = {
 
+  }
 }
 
