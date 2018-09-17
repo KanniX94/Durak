@@ -42,12 +42,10 @@ case class Deck() extends DeckInterface[Card] {
 
   // Erstelle ein leeres Deck
   var deck = ArrayBuffer[Card]()
+  fillDeck()
 
   // Ermittlere einen zufaelligen Trumpf
-  override var trumpCard: Card = determineTrump()
-
-  fillDeck()
-  mixDeck()
+  var trumpCard = determineTrump()
 
   // Fuelle neues Deck mit Karten
   def fillDeck(): Unit = {
@@ -63,7 +61,7 @@ case class Deck() extends DeckInterface[Card] {
   // Ermittle zufaelligen Trumpf
   def determineTrump(): Card = {
     val r = scala.util.Random
-    val tmp = r.nextInt(deck.length + 1)
+    val tmp = r.nextInt(deck.size + 1)
     val trump = deck(tmp)
     deck.remove(tmp)
     trump
@@ -71,6 +69,14 @@ case class Deck() extends DeckInterface[Card] {
 
   override def dealOut(): Item = {
     return null
+  }
+
+  def size(): Unit = {
+    deck.size
+  }
+
+  def isEmpty(): Unit = {
+    deck.size == 0
   }
 
   def takeCard(item: Item): Item = {
