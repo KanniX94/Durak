@@ -113,12 +113,11 @@ case class Deck() extends DeckInterface[Card] {
   }
 
   // Kann ein Gegner seine Karte dazu legen?
-  def canLayCard(cardOnField: ArrayBuffer[Item], cardFromHand: Card): Boolean = {
+  def canLayCard(cardOnField: ArrayBuffer[Card], cardFromHand: Card): Boolean = {
     for (i <- 0 to cardOnField.length - 1) {
-      if (i != equalCards) {
+      if (cardOnField(i).value != cardFromHand.value) {
         return false
       }
-      equalCards = i
     }
     true
   }
