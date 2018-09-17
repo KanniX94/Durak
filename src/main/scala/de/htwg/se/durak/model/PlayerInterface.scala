@@ -7,7 +7,7 @@ import scala.collection.mutable.ArrayBuffer
 trait PlayerInterface {
   var cardOnHand: ArrayBuffer[Item] = null
 
-  // Karte auf naechsten Spieler legen
+  // Karte auf das Feld legen (ArrayBuffer fuellen und an naechsten Spieler uebergeben)
   def putCard(item: Item): Item
 
   // Karte schlagen
@@ -18,5 +18,6 @@ trait PlayerInterface {
 
   // Karten aufnehmen (wenn nicht geschlagen werden kann)
   def pickCard(item: Item): Item
+
 
 }

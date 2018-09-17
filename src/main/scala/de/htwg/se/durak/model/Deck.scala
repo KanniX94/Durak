@@ -85,13 +85,16 @@ case class Deck() extends DeckInterface[Card] {
   }
 
   // Sind alle Karten auf dem Feld gleich, sodass geschoben werden kann?
-  def canPushCard(cardOnField: ArrayBuffer[Item]): Boolean = {
-    var equalCards = cardOnField(0).asInstanceOf[Card].value
+  def canPushCard(cardOnField: ArrayBuffer[Card], cardFromHand: Card): Boolean = {
+    var equalCards = cardOnField(0).value
+    if (equalCards != cardFromHand.value) {
+      return false
+    }
     for (i <- 1 to cardOnField.length - 1) {
-      if (i.asInstanceOf[Card].value != equalCards) {
+      if (cardOnField(i).value != equalCards) {
         return false
       }
-      equalCards = i.asInstanceOf[Card].value
+      equalCards = cardOnField(i).value
     }
     true
   }
@@ -107,10 +110,21 @@ case class Deck() extends DeckInterface[Card] {
     } else {
       false
     }
-
-    // Ist gelegte Karte eine Trumpfkarte?
-    def isTrump(card: Card): Boolean = if (card.symbol == trumpCard.symbol) true else false
   }
+
+  // Kann ein Gegner seine Karte dazu legen?
+  def canLayCard(cardOnField: ArrayBuffer[Item], cardFromHand: Card): Boolean = {
+    for (i <- 0 to cardOnField.length - 1) {
+      if (i != equalCards) {
+        return false
+      }
+      equalCards = i
+    }
+    true
+  }
+
+  // Ist gelegte Karte eine Trumpfkarte?
+  def isTrump(card: Card): Boolean = if (card.symbol == trumpCard.symbol) true else false
 
   override def pickCard(item: Item): Item = ???
 }

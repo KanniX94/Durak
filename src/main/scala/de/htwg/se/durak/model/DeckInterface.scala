@@ -19,8 +19,11 @@ trait DeckInterface[Card] {
   def pickCard(item: Item): Item
 
   // Sind alle Karten auf dem Spielfeld gleich?
-  def canPushCard(cardOnField: ArrayBuffer[Item]): Boolean
+  def canPushCard(cardOnField: ArrayBuffer[Item], cardFromHand: Card): Boolean
 
   // Kann aktuelle Karte geschlagen werden?
-  def canBeatCard(ccardFromField: Card, cardFromHand: Card): Boolean
+  def canBeatCard(cardFromField: Card, cardFromHand: Card): Boolean
+
+  // Kann ein Gegner seine Karte dazu legen?
+  def canLayCard(cardOnField: ArrayBuffer[Item], cardFromHand: Card): Boolean
 }
