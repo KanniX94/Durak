@@ -14,6 +14,7 @@ trait ControllerInterface {
 
   var deck: exactImpl.Deck = null
   var cardOnField: ArrayBuffer[Card] = null
+  var beatenCard: ArrayBuffer[Card] = null
 
   var fieldLength = 0
 

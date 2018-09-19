@@ -65,13 +65,9 @@ case class Deck() extends DeckInterface[Card] {
     deck(tmp)
   }
 
-  def size(): Unit = {
-    deck.size
-  }
+  def size(): Unit = deck.size
 
-  def isEmpty(): Unit = {
-    deck.size == 0
-  }
+  def isEmpty(): Boolean = deck.size == 0
 
   // Sind alle Karten auf dem Feld gleich, sodass geschoben werden kann?
   def canPushCard(cardOnField: ArrayBuffer[Card], cardFromHand: Card): Boolean = {
