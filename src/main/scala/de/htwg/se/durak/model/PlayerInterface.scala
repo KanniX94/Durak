@@ -9,8 +9,8 @@ trait PlayerInterface {
   var cardOnField: ArrayBuffer[Card] = null
 
   var actualHand: FieldInterface = null
-  val p: PositionInterface
-
+  var actualField: FieldInterface = null
+  val playingField: PlayingFieldInterface
 
   // Karte auf das Feld legen (ArrayBuffer fuellen und an naechsten Spieler uebergeben)
   def putCard(card: Card): Card
@@ -20,9 +20,9 @@ trait PlayerInterface {
 
   // Karte schieben
   def pushCard(card: Card): Unit = {
-    if (exactImpl.Deck.canPushCard(cardOnField.p.y, cardOnHand.p.y) {
+    //if (exactImpl.Deck.canPushCard(cardOnField.p.y, cardOnHand.p.y) {
 
-    }
+    //}
   }
 
   // Karten aufnehmen (wenn nicht geschlagen werden kann)

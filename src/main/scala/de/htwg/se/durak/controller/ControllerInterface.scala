@@ -5,10 +5,12 @@ import de.htwg.se.durak.model._
 
 import scala.collection.mutable.ArrayBuffer
 
-trait  ControllerInterface {
+trait ControllerInterface {
   var playerInGame: Array[PlayerInterface] = null
   var playerName: Array[String] = Array()
+  var playingField: PlayingFieldInterface = null
   var amountOfPlayer = 0
+  var actualPlayer: PlayerInterface = null
 
   var deck: exactImpl.Deck = null
   var cardOnField: ArrayBuffer[Card] = null
@@ -17,7 +19,6 @@ trait  ControllerInterface {
 
 
   def initialize(amountOfPlayer: Int)
-
 
 
 }
