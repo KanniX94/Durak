@@ -65,10 +65,6 @@ case class Deck() extends DeckInterface[Card] {
     deck(tmp)
   }
 
-  override def dealOut(): Item = {
-    return null
-  }
-
   def size(): Unit = {
     deck.size
   }
@@ -77,28 +73,14 @@ case class Deck() extends DeckInterface[Card] {
     deck.size == 0
   }
 
-  def takeCard(item: Item): Item = {
-    //Karte ziehen, bis alle Spieler 6 Karten auf der Hand haben
-    // Oder lieber vom Player aus steuern?
-    // ...
-    return null
-  }
-
-  def dropCard(item: Item): Item = {
-    return null
-  }
-
   // Sind alle Karten auf dem Feld gleich, sodass geschoben werden kann?
   def canPushCard(cardOnField: ArrayBuffer[Card], cardFromHand: Card): Boolean = {
     var equalCards = cardOnField(0).value
-    if (equalCards != cardFromHand.value) {
-      return false
-    }
     for (i <- 1 to cardOnField.length - 1) {
       if (cardOnField(i).value != equalCards) {
-        return false
+        false
       }
-      equalCards = cardOnField(i).value
+      equalCards = cardOnField(i + 1).value
     }
     true
   }
@@ -120,7 +102,7 @@ case class Deck() extends DeckInterface[Card] {
   def canLayCard(cardOnField: ArrayBuffer[Card], cardFromHand: Card): Boolean = {
     for (i <- 0 to cardOnField.length - 1) {
       if (cardOnField(i).value != cardFromHand.value) {
-        return false
+        false
       }
     }
     true
@@ -129,9 +111,10 @@ case class Deck() extends DeckInterface[Card] {
   // Ist gelegte Karte eine Trumpfkarte?
   def isTrump(card: Card): Boolean = if (card.symbol == trumpCard.symbol) true else false
 
-  override def pickCard(item: Item): Item = ???
-}
-
-object Deck {
-  val canPushCard: Unit = ???
+  // ziehe naechste Karte vom Deck und uebergebe sie dem Player
+  def dealOut(): Card = {
+    val nextCard = deck(0)
+    deck.remove(0)
+    nextCard
+  }
 }
