@@ -5,7 +5,9 @@ import de.htwg.se.durak.model.{Item, PlayerInterface, PlayingFieldInterface, Pos
 import scala.collection.mutable.ArrayBuffer
 
 case class Player(playingField: PlayingFieldInterface, name: String) extends PlayerInterface {
-  override def toString: String = name
+  override def toString: String = {
+    name + ":\t\t| "
+  }
 
   cardOnHand = ArrayBuffer[Card]()
   cardOnField = ArrayBuffer[Card]()
@@ -46,7 +48,5 @@ case class Player(playingField: PlayingFieldInterface, name: String) extends Pla
   override def pushCard(card: Card): Unit = {
 
   }
-
-  override val p: PositionInterface = null
 }
 

@@ -30,9 +30,17 @@ class Controller extends ControllerInterface {
 
   def dealOut(): Unit = {
     for (i <- playerInGame) {
-      if (i.actualHand.length < 6 && !deck.isEmpty()) {
+      while (i.cardOnHand.length < 6 && !deck.isEmpty()) {
         i.cardOnHand.append(deck.dealOut())
       }
+    }
+  }
+
+  def printPlayerState(): Unit = {
+    for (player <- playerInGame) {
+      print(player.toString)
+      for (card <- player.cardOnHand)
+        print(" " + card)
     }
   }
 
