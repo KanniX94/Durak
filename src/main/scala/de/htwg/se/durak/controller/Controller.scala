@@ -12,15 +12,10 @@ class Controller extends ControllerInterface {
   cardOnField = new ArrayBuffer()
   beatenCard = new ArrayBuffer()
   deck = new Deck()
-
-  actualPlayer = Player(playingField, "Default")
-
-
+  
   def initialize(amountOfPlayer: Int): Unit = {
     this.amountOfPlayer = amountOfPlayer
     playerInGame = new Array[PlayerInterface](amountOfPlayer)
-    playingField = new PlayingField(4, 32)
-    fieldLength = playingField.line(0)(0).length
     GameReset()
   }
 

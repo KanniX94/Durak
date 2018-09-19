@@ -10,7 +10,6 @@ trait PlayerInterface {
 
   var actualHand: FieldInterface = null
   var actualField: FieldInterface = null
-  val playingField: PlayingFieldInterface
 
   // Karte auf das Feld legen (ArrayBuffer fuellen und an naechsten Spieler uebergeben)
   def putCard(card: Card): Card

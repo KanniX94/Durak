@@ -1,10 +1,10 @@
 package de.htwg.se.durak.model.exactImpl
 
-import de.htwg.se.durak.model.{Item, PlayerInterface, PlayingFieldInterface, PositionInterface}
+import de.htwg.se.durak.model.{Item, PlayerInterface, PositionInterface}
 
 import scala.collection.mutable.ArrayBuffer
 
-case class Player(playingField: PlayingFieldInterface, name: String) extends PlayerInterface {
+case class Player(name: String) extends PlayerInterface {
   override def toString: String = {
     name + ":\t\t| "
   }

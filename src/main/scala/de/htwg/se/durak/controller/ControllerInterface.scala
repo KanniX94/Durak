@@ -8,7 +8,6 @@ import scala.collection.mutable.ArrayBuffer
 trait ControllerInterface {
   var playerInGame: Array[PlayerInterface] = null
   var playerName: Array[String] = Array()
-  var playingField: PlayingFieldInterface = null
   var amountOfPlayer = 0
   var actualPlayer: PlayerInterface = null
 
