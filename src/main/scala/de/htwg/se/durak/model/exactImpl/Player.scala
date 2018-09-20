@@ -1,13 +1,22 @@
 package de.htwg.se.durak.model.exactImpl
 
-import de.htwg.se.durak.model.{Item, PlayerInterface}
+import de.htwg.se.durak.model.{Item, PlayerInterface, PositionInterface}
 
 import scala.collection.mutable.ArrayBuffer
 
 case class Player(name: String) extends PlayerInterface {
-  override def toString: String = name
+  override def toString: String = {
+    name + ":\t\t| "
+  }
 
   cardOnHand = ArrayBuffer[Card]()
+  cardOnField = ArrayBuffer[Card]()
+
+  def getCardOnField(cards: ArrayBuffer[Card]): Unit = {
+    cardOnField = cards
+  }
+
+  def moveCardOnField(): Unit = cardOnField.clear()
 
   def win(): String = {
     return s"$name hat gewonnen und verlaesst das Spiel!"
@@ -36,7 +45,8 @@ case class Player(name: String) extends PlayerInterface {
 
   override def beatCard(card: Card): Card = ???
 
-  override def pushCard(card: Card): Card = ???
+  override def pushCard(card: Card): Unit = {
 
+  }
 }
 

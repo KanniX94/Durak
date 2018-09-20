@@ -6,6 +6,10 @@ import scala.collection.mutable.ArrayBuffer
 
 trait PlayerInterface {
   var cardOnHand: ArrayBuffer[Card] = null
+  var cardOnField: ArrayBuffer[Card] = null
+
+  var actualHand: FieldInterface = null
+  var actualField: FieldInterface = null
 
   // Karte auf das Feld legen (ArrayBuffer fuellen und an naechsten Spieler uebergeben)
   def putCard(card: Card): Card
@@ -14,7 +18,11 @@ trait PlayerInterface {
   def beatCard(card: Card): Card
 
   // Karte schieben
-  def pushCard(card: Card): Card
+  def pushCard(card: Card): Unit = {
+    //if (exactImpl.Deck.canPushCard(cardOnField.p.y, cardOnHand.p.y) {
+
+    //}
+  }
 
   // Karten aufnehmen (wenn nicht geschlagen werden kann)
   def pickCard(card: Card): Card
