@@ -6,46 +6,20 @@ import de.htwg.se.durak.model._
 import scala.collection.mutable.ArrayBuffer
 
 trait ControllerInterface {
-  var playerInGame: Array[PlayerInterface] = null
+  var playerInGame: Array[PlayerInterface]
   var playerName: Array[String] = Array()
   var amountOfPlayer = 0
-  var actualPlayer: PlayerInterface = null
+  var actualPlayer: PlayerInterface
 
-  var deck: exactImpl.Deck = null
-  var cardOnField: ArrayBuffer[Card] = null
-  var beatenCard: ArrayBuffer[Card] = null
+  var deck: exactImpl.Deck
+  var cardOnField: ArrayBuffer[Card]
+  var beatenCard: ArrayBuffer[Card]
 
   var difficulty = 0
+  var cardsLeft = 0
 
   def initialize(amountOfPlayer: Int)
-
-  def setDifficulty(dif: Int): Unit = {
-    difficulty = dif
-  }
-
-  def cpuAttacks(): Unit = {
-    val r = scala.util.Random
-    val attackChance = r.nextInt(3) + 1
-    difficulty match {
-      case 2 => {
-        for (cpuPlayer <- 1 to playerInGame.length + 1) {
-          for (i <- playerInGame(cpuPlayer).cardOnHand)
-            if (attackChance <= 2 && deck.canLayCard(cardOnField, i)) {
-
-            }
-        }
-      }
-      case 3 => {
-        for (cpuPlayer <- 1 to playerInGame.length + 1) {
-          for (i <- playerInGame(cpuPlayer).cardOnHand)
-            if (deck.canLayCard(cardOnField, i)) {
-
-            }
-        }
-      }
-    }
-
-  }
+  def setDifficulty(dif: Int)
 
 
 }

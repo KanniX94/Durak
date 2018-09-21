@@ -2,6 +2,8 @@ package de.htwg.se.durak.aview.tui
 
 import de.htwg.se.durak.controller._
 import de.htwg.se.durak.model._
+
+import scala.io.StdIn
 import swing._
 
 class Tui(c: Controller) extends Reactor {
@@ -16,8 +18,9 @@ class Tui(c: Controller) extends Reactor {
       printGameStart
       condition = "GameStart"
     }
-    case e: GameStart => {
-      GameState
+    case e: StartRound => {
+      gameState
+      printGameStart
       condition = "GameStart"
     }
     case e: GameNew => {
@@ -25,12 +28,12 @@ class Tui(c: Controller) extends Reactor {
       condition = "GameStart"
     }
     case e: AmountPlayer => {
-      println("Wie viele Spieler spielen mit? (min 2, max 4")
-      condition = "AmountPlayer"
+      print("Wie viele Spieler spielen mit? (min 2, max 4)\n")
+      condition = "amountPlayer"
     }
     case e: Difficulty => {
-      println("Wie schwer soll das Spiel werden?")
-      println("1 = leicht | 2 = mittel | 3 = schwer")
+      print("Wie schwer soll das Spiel werden?\n")
+      print("1 = leicht | 2 = mittel | 3 = schwer\n")
       this.difficulty = c.difficulty
       condition = "difficulty"
     }
@@ -58,10 +61,38 @@ class Tui(c: Controller) extends Reactor {
 
   def interpret(input: String): Unit = {
     condition match {
-      case "difficulty" => setDifficulty(difficulty)
+      case "startGame" =>
+      case "difficulty" => setDifficulty(input.toInt)
+      case "amountPlayer" => setAmountPlayer(input)
+      case "attackPlayer" => attackPlayer(input, c.actualPlayer)
+      case "chooseCard" => chooseCard()
+      case "pushCard" =>
+      case "beatCard" =>
       case _ => {
       }
     }
+  }
+
+  def chooseOrPush(): Unit = {
+    print("Moechtest du schlagen oder schieben?\n")
+    print("(1 = schlagen | 2 = schieben)\n")
+    val tmp = StdIn.readLine()
+  }
+
+  def chooseCard(i: String): Unit = {
+    print("Welche Karte moechtest du schlagen?\n")
+    val card1 = StdIn.readLine()
+    print("Mit welcher Karte moechtest du schlagen?\n")
+
+
+  }
+
+  def beatCard(attackCard: Int, beatCard: Int): Unit = {
+    c.beatCard(attackCard, beatCard)
+  }
+
+  def attackPlayer(input: String, player: PlayerInterface): Unit = {
+
   }
 
   def setDifficulty(dif: Int): Unit = {
@@ -79,50 +110,62 @@ class Tui(c: Controller) extends Reactor {
         print("Das Spiel wurde auf schwer gestellt!")
       }
       case _ => {
-        println("Diesen Schwierigkeitsgrad gibt es nicht.")
+        print("Diesen Schwierigkeitsgrad gibt es nicht.\n")
       }
     }
   }
 
-  def won = {
+  def won: Unit = {
     deafTo(c)
-    println("Du hast gewonnen!")
+    print("Du hast gewonnen!\n")
   }
 
-  def lost = {
+  def lost: Unit = {
     deafTo(c)
-    println("Du bist ein Durak!")
+    print("Du bist ein Durak!\n")
   }
 
-  def AmountPlayer(amountOfPlayer: String): Unit = {
+  def setAmountPlayer(amountOfPlayer: String): Unit = {
     amountOfPlayer match {
       case "0" => {
-        println("Ein Spiel ohne Spieler ist kein Spiel...")
+        print("Ein Spiel ohne Spieler ist kein Spiel...\n")
       }
       case "1" => {
-        println("Du kannst nicht gegen dich selbst spielen!")
+        print("Du kannst nicht gegen dich selbst spielen!\n")
       }
       case "2" | "3" | "4" => {
-        println("Es spielen " + amountOfPlayer + " mit!")
+        print("Es spielen " + amountOfPlayer + " mit!\n")
         c.initialize(amountOfPlayer.toInt)
       }
       case _ => {
-        println("Diese Eingabe ist ungueltig!")
+        print("Diese Eingabe ist ungueltig!\n")
       }
     }
   }
 
   def initialize(): Unit = {
-    println("Das Spiel beginnt nun.\n")
+    print("Das Spiel beginnt nun.\n")
     c.dealOut()
     c.printPlayerState()
   }
 
+  def gameState: Unit = {
+    print("Du hast " + c.actualPlayer.cardOnHand.size + " Karten auf der Hand\n")
+    for (card <- c.actualPlayer.cardOnHand) {
+      print(card.name + " ")
+    }
+    print("\n\nDeine Gegner haben folgende Karten:\n")
+    for (player <- 1 to c.playerInGame.length + 1) {
+      print(c.player.cardOnHand)
+    }
+
+  }
+
   def printGameStart: Unit = {
-    println(c.actualPlayer + " ist an der Reihe.")
-    println("Welche Karte moechtest du legen? (1 = 1. Karte, 2 = 2. Karte etc.)")
+    print(c.actualPlayer + " ist an der Reihe.\n")
+    print("Welche Karte moechtest du legen? (1 = 1. Karte, 2 = 2. Karte etc.)\n")
     for (i <- c.actualPlayer.cardOnHand) {
-      println(i + " ")
+      print(i + " \n")
     }
   }
 }
