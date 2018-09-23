@@ -6,7 +6,7 @@ import scala.collection.mutable.ArrayBuffer
 
 case class Player(name: String) extends PlayerInterface {
   override def toString: String = {
-    name + ":\t\t| "
+    name
   }
 
   cardOnHand = ArrayBuffer[Card]()
@@ -17,14 +17,6 @@ case class Player(name: String) extends PlayerInterface {
   }
 
   def moveCardOnField(): Unit = cardOnField.clear()
-
-  def win(): String = {
-    return s"$name hat gewonnen und verlaesst das Spiel!"
-  }
-
-  def loose(): String = {
-    return s"$name ist ein Durak!"
-  }
 
   def putCard(card: Card): Card = ???
 

@@ -6,14 +6,14 @@ import de.htwg.se.durak.model._
 import scala.collection.mutable.ArrayBuffer
 
 trait ControllerInterface {
-  var playerInGame: Array[PlayerInterface]
-  var playerName: Array[String] = Array()
+  var playerInGame: Array[PlayerInterface] = null
+  var playerName: Array[String] = Array("Marcel", "Christoph", "Bernd", "Sabrina")
   var amountOfPlayer = 0
-  var actualPlayer: PlayerInterface
+  var actualPlayer: PlayerInterface = null
 
-  var deck: exactImpl.Deck
-  var cardOnField: ArrayBuffer[Card]
-  var beatenCard: ArrayBuffer[Card]
+  var deck: exactImpl.Deck = null
+  var cardOnField: ArrayBuffer[Card] = null
+  var beatenCard: ArrayBuffer[Card] = null
 
   var difficulty = 0
   var cardsLeft = 0

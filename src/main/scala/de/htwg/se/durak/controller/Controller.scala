@@ -6,8 +6,8 @@ import de.htwg.se.durak.util.Observable
 
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
-import scala.swing.event.Event
-import scala.swing.Publisher
+//import scala.swing.event.Event
+//import scala.swing.Publisher
 
 case class Difficulty()
 
@@ -39,8 +39,14 @@ class Controller extends ControllerInterface {
   deck = new Deck()
 
   def initialize(amountOfPlayer: Int): Unit = {
+    deck.init()
     this.amountOfPlayer = amountOfPlayer
     playerInGame = new Array[PlayerInterface](amountOfPlayer)
+    for (player <- 0 to playerInGame.length - 1) {
+      playerInGame(player) = Player(playerName(player))
+    }
+    dealOut()
+    printPlayerState()
     gameReset()
   }
 
@@ -59,15 +65,24 @@ class Controller extends ControllerInterface {
   }
 
   def printPlayerState(): Unit = {
+    cheat()
+    /*print(playerInGame(0).toString + "\n")
+    for (card <- playerInGame(0).cardOnHand) {
+      print(card.name + "\n")
+    }*/
+  }
+
+  def cheat(): Unit = {
     for (player <- playerInGame) {
-      print(player.toString)
+      print(player.toString + "\n")
       for (card <- player.cardOnHand)
-        print(" " + card)
+        print(card.name + "\n")
+      print("\n")
     }
   }
 
   def beatCard(attackCard: Int, beatCard: Int): Unit = {
-    if (attackCard <= cardOnField.length -1) {
+    if (attackCard <= cardOnField.length - 1) {
       if (deck.canBeatCard(cardOnField(attackCard), actualPlayer.cardOnHand(beatCard))) {
         beatenCard.append(cardOnField(attackCard))
         beatenCard.append(actualPlayer.cardOnHand(beatCard))

@@ -3,29 +3,29 @@ package de.htwg.se.durak.aview.tui
 import de.htwg.se.durak.controller._
 import de.htwg.se.durak.model._
 
-import scala.io.StdIn
-import swing._
+//import swing._
 
-class Tui(c: Controller) extends Reactor {
+class Tui(c: Controller) {
 
-  var condition = "GameStart"
+  //var condition = "startGame"
+  var condition = "amountPlayer"
 
-  listenTo(c)
+  //listenTo(c)
 
-  reactions += {
+  /*reactions += {
     case e: Start => {
       initialize()
       printGameStart
-      condition = "GameStart"
+      condition = "startGame"
     }
     case e: StartRound => {
       gameState
       printGameStart
-      condition = "GameStart"
+      condition = "startGame"
     }
     case e: GameNew => {
       printGameStart
-      condition = "GameStart"
+      condition = "startGame"
     }
     case e: AmountPlayer => {
       print("Wie viele Spieler spielen mit? (min 2, max 4)\n")
@@ -56,16 +56,17 @@ class Tui(c: Controller) extends Reactor {
       won
     }
   }
+  */
 
   var difficulty = 1
 
   def interpret(input: String): Unit = {
     condition match {
-      case "startGame" =>
+      case "startGame" => initialize()
       case "difficulty" => setDifficulty(input.toInt)
       case "amountPlayer" => setAmountPlayer(input)
       case "attackPlayer" => attackPlayer(input, c.actualPlayer)
-      case "chooseCard" => chooseCard()
+      case "chooseCard" =>
       case "pushCard" =>
       case "beatCard" =>
       case _ => {
@@ -76,13 +77,18 @@ class Tui(c: Controller) extends Reactor {
   def chooseOrPush(): Unit = {
     print("Moechtest du schlagen oder schieben?\n")
     print("(1 = schlagen | 2 = schieben)\n")
-    val tmp = StdIn.readLine()
+
   }
 
-  def chooseCard(i: String): Unit = {
+  def chooseCard(): Unit = {
     print("Welche Karte moechtest du schlagen?\n")
-    val card1 = StdIn.readLine()
+    for (i <- 0 to c.cardOnField.length - 1) {
+      print(i + 1 + " = " + c.cardOnField(i) + " | ")
+    }
     print("Mit welcher Karte moechtest du schlagen?\n")
+    for (i <- 0 to c.actualPlayer.cardOnHand.length - 1) {
+      print(i + 1 + " = " + c.actualPlayer.cardOnHand(i) + " | ")
+    }
 
 
   }
@@ -116,12 +122,12 @@ class Tui(c: Controller) extends Reactor {
   }
 
   def won: Unit = {
-    deafTo(c)
+    //deafTo(c)
     print("Du hast gewonnen!\n")
   }
 
   def lost: Unit = {
-    deafTo(c)
+    //deafTo(c)
     print("Du bist ein Durak!\n")
   }
 
@@ -145,8 +151,6 @@ class Tui(c: Controller) extends Reactor {
 
   def initialize(): Unit = {
     print("Das Spiel beginnt nun.\n")
-    c.dealOut()
-    c.printPlayerState()
   }
 
   def gameState: Unit = {
@@ -154,18 +158,21 @@ class Tui(c: Controller) extends Reactor {
     for (card <- c.actualPlayer.cardOnHand) {
       print(card.name + " ")
     }
-    print("\n\nDeine Gegner haben folgende Karten:\n")
-    for (player <- 1 to c.playerInGame.length + 1) {
-      print(c.player.cardOnHand)
-    }
 
+    print("\n\nDeine Gegner haben folgende Karten:\n\n")
+    for (player <- 1 to c.playerInGame.length + 1) {
+      print(c.playerInGame(player) + "\n")
+      for (card <- c.playerInGame(player).cardOnHand) {
+        print(" ? ")
+      }
+    }
   }
 
   def printGameStart: Unit = {
     print(c.actualPlayer + " ist an der Reihe.\n")
     print("Welche Karte moechtest du legen? (1 = 1. Karte, 2 = 2. Karte etc.)\n")
     for (i <- c.actualPlayer.cardOnHand) {
-      print(i + " \n")
+      print(i.name + " \n")
     }
   }
 }
