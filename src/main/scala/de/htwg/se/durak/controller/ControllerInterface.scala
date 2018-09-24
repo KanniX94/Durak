@@ -4,8 +4,9 @@ import de.htwg.se.durak.model.exactImpl._
 import de.htwg.se.durak.model._
 
 import scala.collection.mutable.ArrayBuffer
+import scala.swing.Publisher
 
-trait ControllerInterface {
+trait ControllerInterface extends Publisher {
   var playerInGame: Array[PlayerInterface] = null
   var playerName: Array[String] = Array("Marcel", "Christoph", "Bernd", "Sabrina")
   var amountOfPlayer = 0

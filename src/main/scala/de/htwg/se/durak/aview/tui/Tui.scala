@@ -3,16 +3,15 @@ package de.htwg.se.durak.aview.tui
 import de.htwg.se.durak.controller._
 import de.htwg.se.durak.model._
 
-//import swing._
+import swing._
 
-class Tui(c: Controller) {
+class Tui(c: Controller) extends Reactor {
 
-  //var condition = "startGame"
-  var condition = "amountPlayer"
+  var condition = "startGame"
 
-  //listenTo(c)
+  listenTo(c)
 
-  /*reactions += {
+  reactions += {
     case e: Start => {
       initialize()
       printGameStart
@@ -56,7 +55,7 @@ class Tui(c: Controller) {
       won
     }
   }
-  */
+
 
   var difficulty = 1
 

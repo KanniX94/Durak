@@ -10,7 +10,7 @@ class DeckSpec extends WordSpec with Matchers {
     var deck = exactImpl.Deck()
     "new" should {
       "be empty" in {
-        deck.size should be(deck.isEmpty())
+        deck.size should be(0)
       }
     }
     "filled with all cards" should {
