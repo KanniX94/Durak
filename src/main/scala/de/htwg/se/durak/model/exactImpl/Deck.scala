@@ -42,10 +42,14 @@ case class Deck() extends DeckInterface[Card] {
 
   // Erstelle ein leeres Deck
   var deck = ArrayBuffer[Card]()
-  fillDeck()
-
-  // Ermittlere einen zufaelligen Trumpf
+  init()
   var trumpCard = determineTrump()
+
+  def init(): Unit = {
+    fillDeck()
+    mixDeck()
+    trumpCard = determineTrump()
+  }
 
   // Fuelle neues Deck mit Karten
   def fillDeck(): Unit = {
@@ -55,7 +59,13 @@ case class Deck() extends DeckInterface[Card] {
 
   // Mische das Deck
   def mixDeck(): Unit = {
-    util.Random.shuffle(deck)
+    val r = scala.util.Random
+    for (i <- 0 to deck.length - 1) {
+      val tmp = r.nextInt(deck.length)
+      val tmpCard = deck(i)
+      deck(i) = deck(tmp)
+      deck(tmp) = tmpCard
+    }
   }
 
   // Ermittle zufaelligen Trumpf
@@ -110,7 +120,7 @@ case class Deck() extends DeckInterface[Card] {
   // ziehe naechste Karte vom Deck und uebergebe sie dem Player
   def dealOut(): Card = {
     val nextCard = deck(0)
-    deck.remove(0)
+    deck -= nextCard
     nextCard
   }
 }

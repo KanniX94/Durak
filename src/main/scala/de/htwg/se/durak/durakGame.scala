@@ -2,6 +2,9 @@ package de.htwg.se.durak
 
 import de.htwg.se.durak.aview.tui.Tui
 import de.htwg.se.durak.controller.Controller
+import de.htwg.se.durak.model.exactImpl.{Card, Deck, Player}
+
+import scala.collection.mutable.ArrayBuffer
 import scala.io.StdIn
 
 object durakGame {
