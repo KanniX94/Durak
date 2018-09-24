@@ -6,12 +6,14 @@ import de.htwg.se.durak.util.Observable
 
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
-//import scala.swing.event.Event
-//import scala.swing.Publisher
+import scala.swing.event.Event
+import scala.swing.Publisher
 
 case class Difficulty()
 
 case class Start()
+
+case class StartRound()
 
 case class GameStart()
 
