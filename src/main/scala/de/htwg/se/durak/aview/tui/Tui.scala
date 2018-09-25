@@ -33,7 +33,8 @@ class Tui(c: Controller) extends Reactor {
       condition = "difficulty"
     }
     case e: AttackPlayer => {
-
+      print("Du bist an der Reihe!\n")
+      print("Mit welcher Karte moechtest du angreifen?\n")
     }
     case e: PushCard => {
 
@@ -51,13 +52,14 @@ class Tui(c: Controller) extends Reactor {
       won
     }
     case e: saveGame => {
-
+      print("Moechtest du das Spiel wirklich speichern? (ja|nein)\n")
+      condition = "saveGame"
     }
     case e: loadGame => {
-
+      print("Moechtest du das Spiel wirklich laden? (ja|nein)\n")
+      condition = "loadGame"
     }
   }
-
 
   var difficulty = 1
 
@@ -75,20 +77,23 @@ class Tui(c: Controller) extends Reactor {
     }
   }
 
-  def chooseOrPush(): Unit = {
+  def beatOrPush(): Unit = {
     print("Moechtest du schlagen oder schieben?\n")
     print("(1 = schlagen | 2 = schieben)\n")
 
   }
 
-  def chooseCard(): Unit = {
+  def chooseCardOnField(): Unit = {
     print("Welche Karte moechtest du schlagen?\n")
     for (i <- 0 to c.cardOnField.length - 1) {
-      print(i + 1 + " = " + c.cardOnField(i) + " | ")
+      print(i + 1 + " = " + c.cardOnField(i).name + " | ")
     }
-    print("Mit welcher Karte moechtest du schlagen?\n")
+  }
+
+  def chooseCardOnHand(): Unit = {
+    print("Welche Karte moechtest du auswaehlen?\n")
     for (i <- 0 to c.playerInGame(0).cardOnHand.length - 1) {
-      print(i + 1 + " = " + c.playerInGame(0).cardOnHand(i) + " | ")
+      print(i + 1 + " = " + c.playerInGame(0).cardOnHand(i).name + " | ")
     }
   }
 

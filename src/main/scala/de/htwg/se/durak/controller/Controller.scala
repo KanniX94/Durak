@@ -4,7 +4,6 @@ import de.htwg.se.durak.model._
 import de.htwg.se.durak.model.exactImpl._
 import de.htwg.se.durak.util.Observable
 
-import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
 import scala.swing.event.Event
 
