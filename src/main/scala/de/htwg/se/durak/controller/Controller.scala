@@ -16,6 +16,10 @@ case class GameStart()
 
 case class GameNew()
 
+case class saveGame() extends Event
+
+case class loadGame() extends Event
+
 case class AmountPlayer() extends Event
 
 case class AttackPlayer()

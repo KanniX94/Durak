@@ -50,6 +50,12 @@ class Tui(c: Controller) extends Reactor {
     case e: GameWon => {
       won
     }
+    case e: saveGame => {
+
+    }
+    case e: loadGame => {
+
+    }
   }
 
 
@@ -159,6 +165,19 @@ class Tui(c: Controller) extends Reactor {
         print(" ? ")
       }
     }
+  }
+
+  def saveGame: Unit = {
+
+  }
+
+  def loadGame: Unit = {
+
+  }
+
+  def exit: Unit = {
+    print("Das Spiel wird nun beendet!\n")
+    exit
   }
 
   def printGameStart: Unit = {
