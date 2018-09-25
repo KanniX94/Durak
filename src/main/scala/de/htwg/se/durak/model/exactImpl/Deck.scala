@@ -43,12 +43,9 @@ case class Deck() extends DeckInterface[Card] {
   // Erstelle ein leeres Deck
   var deck = ArrayBuffer[Card]()
   init()
-  var trumpCard = determineTrump()
 
   def init(): Unit = {
     fillDeck()
-    mixDeck()
-    trumpCard = determineTrump()
   }
 
   // Fuelle neues Deck mit Karten
@@ -57,65 +54,11 @@ case class Deck() extends DeckInterface[Card] {
     deck ++= cards
   }
 
-  // Mische das Deck
-  def mixDeck(): Unit = {
-    val r = scala.util.Random
-    for (i <- 0 to deck.length - 1) {
-      val tmp = r.nextInt(deck.length)
-      val tmpCard = deck(i)
-      deck(i) = deck(tmp)
-      deck(tmp) = tmpCard
-    }
-  }
-
-  // Ermittle zufaelligen Trumpf
-  def determineTrump(): Card = {
-    val r = scala.util.Random
-    val tmp = r.nextInt(deck.size + 1)
-    deck(tmp)
-  }
+  def length: Int = deck.length
 
   def size(): Unit = deck.size
 
   def isEmpty(): Boolean = deck.size == 0
-
-  // Sind alle Karten auf dem Feld gleich, sodass geschoben werden kann?
-  def canPushCard(cardOnField: ArrayBuffer[Card], cardFromHand: Card): Boolean = {
-    var equalCards = cardOnField(0).value
-    for (i <- 1 to cardOnField.length - 1) {
-      if (cardOnField(i).value != equalCards) {
-        false
-      }
-      equalCards = cardOnField(i + 1).value
-    }
-    true
-  }
-
-  // Kann die Karte geschlagen werden?
-  def canBeatCard(cardFromField: Card, cardFromHand: Card): Boolean = {
-    if ((cardFromHand.value > cardFromField.value &&
-      cardFromHand.symbol == cardFromField.symbol) ||
-      (!isTrump(cardFromField) && isTrump(cardFromHand)) ||
-      (isTrump(cardFromHand) && isTrump(cardFromField) &&
-        cardFromHand.value > cardFromField.value)) {
-      true
-    } else {
-      false
-    }
-  }
-
-  // Kann ein Gegner seine Karte dazu legen?
-  def canLayCard(cardOnField: ArrayBuffer[Card], cardFromHand: Card): Boolean = {
-    for (i <- 0 to cardOnField.length - 1) {
-      if (cardOnField(i).value != cardFromHand.value) {
-        false
-      }
-    }
-    true
-  }
-
-  // Ist gelegte Karte eine Trumpfkarte?
-  def isTrump(card: Card): Boolean = if (card.symbol == trumpCard.symbol) true else false
 
   // ziehe naechste Karte vom Deck und uebergebe sie dem Player
   def dealOut(): Card = {

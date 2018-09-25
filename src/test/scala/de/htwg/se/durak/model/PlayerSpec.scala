@@ -10,8 +10,8 @@ import scala.collection.mutable.ArrayBuffer
 @RunWith(classOf[JUnitRunner])
 class PlayerSpec extends WordSpec with Matchers {
   "A Player" when {
+    val player = exactImpl.Player("Marcel")
     "new" should {
-      val player = exactImpl.Player("Marcel")
       "have a name" in {
         player.name should be("Marcel")
       }
@@ -21,12 +21,17 @@ class PlayerSpec extends WordSpec with Matchers {
       val cardOnField: ArrayBuffer[Card] = ArrayBuffer(Card("7 Herz", 7, "H"), Card("7 Piek", 7, "P"))
       "the cards have the same value" in {
         val cardOnHand = exactImpl.Card("7 Kreuz", 7, "K")
-        deck.canPushCard(cardOnField, cardOnHand) should be(true)
-      }
-      "the card have not an other value" in {
-        val cardOnHand2 = exactImpl.Card("9 Kreuz", 9, "K")
-        deck.canPushCard(cardOnField, cardOnHand2) should be(false)
+        player.pushCard(cardOnHand)
+        //deck.canPushCard(cardOnField, cardOnHand) should be(true)
       }
     }
+    /*"beat a card" should {
+      val deck = exactImpl.Deck()
+      "have a higher value or trump" in {
+        val cardOnField = Card("7 Herz", 7, "H")
+        val cardOnHand = Card("8 Herz", 8, "H")
+        deck.canBeatCard(cardOnField, cardOnHand) should be(true)
+      }
+    }*/
   }
 }

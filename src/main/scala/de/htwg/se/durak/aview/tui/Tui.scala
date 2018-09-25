@@ -7,7 +7,7 @@ import swing._
 
 class Tui(c: Controller) extends Reactor {
 
-  var condition = "startGame"
+  var condition = "amountPlayer"
 
   listenTo(c)
 
@@ -17,11 +17,7 @@ class Tui(c: Controller) extends Reactor {
       printGameStart
       condition = "startGame"
     }
-    case e: StartRound => {
-      gameState
-      printGameStart
-      condition = "startGame"
-    }
+
     case e: GameNew => {
       printGameStart
       condition = "startGame"
@@ -85,11 +81,9 @@ class Tui(c: Controller) extends Reactor {
       print(i + 1 + " = " + c.cardOnField(i) + " | ")
     }
     print("Mit welcher Karte moechtest du schlagen?\n")
-    for (i <- 0 to c.actualPlayer.cardOnHand.length - 1) {
-      print(i + 1 + " = " + c.actualPlayer.cardOnHand(i) + " | ")
+    for (i <- 0 to c.playerInGame(0).cardOnHand.length - 1) {
+      print(i + 1 + " = " + c.playerInGame(0).cardOnHand(i) + " | ")
     }
-
-
   }
 
   def beatCard(attackCard: Int, beatCard: Int): Unit = {
@@ -121,12 +115,12 @@ class Tui(c: Controller) extends Reactor {
   }
 
   def won: Unit = {
-    //deafTo(c)
+    deafTo(c)
     print("Du hast gewonnen!\n")
   }
 
   def lost: Unit = {
-    //deafTo(c)
+    deafTo(c)
     print("Du bist ein Durak!\n")
   }
 

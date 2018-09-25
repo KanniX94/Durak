@@ -19,16 +19,5 @@ class DeckSpec extends WordSpec with Matchers {
         deck.cards.size should be(32)
       }
     }
-    "mix it" should {
-      "not influence the deck" in {
-        deck.mixDeck()
-        deck.cards.size should be(32)
-      }
-      "change the order of the cards" in {
-        val oldDeck = deck.cards
-        deck.mixDeck()
-        oldDeck should not be equals(deck.cards)
-      }
-    }
   }
 }
