@@ -58,7 +58,12 @@ class Controller extends ControllerInterface {
 
   def gameReset(): Unit = {
     dealOut()
-    actualPlayer = playerInGame(0)
+    setActualPlayer()
+  }
+
+  def setActualPlayer(): Unit = {
+    val r = scala.util.Random
+    actualPlayer = playerInGame(r.nextInt(playerInGame.length))
   }
 
   def dealOut(): Unit = {
@@ -71,11 +76,10 @@ class Controller extends ControllerInterface {
   }
 
   def printPlayerState(): Unit = {
-    cheat()
-    /*print(playerInGame(0).toString + "\n")
+    print(playerInGame(0).toString + "\n")
     for (card <- playerInGame(0).cardOnHand) {
       print(card.name + "\n")
-    }*/
+    }
   }
 
   def cheat(): Unit = {
