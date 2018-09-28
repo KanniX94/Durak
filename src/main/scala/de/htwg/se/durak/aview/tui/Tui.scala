@@ -2,6 +2,8 @@ package de.htwg.se.durak.aview.tui
 
 import de.htwg.se.durak.controller._
 import de.htwg.se.durak.model._
+import de.htwg.se.durak.util.Observable
+import de.htwg.se.durak.util.Observer
 
 import swing._
 
@@ -59,12 +61,19 @@ class Tui(c: Controller) extends Reactor {
       print("Moechtest du das Spiel wirklich laden? (ja|nein)\n")
       condition = "loadGame"
     }
+    case e: mainMenu => {
+
+    }
   }
 
   var difficulty = 1
 
-  def interpret(input: String): Unit = {
+  def interpret(input: String) = {
+    var continue = true
+
     condition match {
+      case "quit" => continue = false
+      case "reset" =>
       case "startGame" => initialize()
       case "difficulty" => setDifficulty(input.toInt)
       case "amountPlayer" => setAmountPlayer(input)
@@ -72,9 +81,11 @@ class Tui(c: Controller) extends Reactor {
       case "chooseCard" =>
       case "pushCard" =>
       case "beatCard" =>
-      case _ => {
-      }
+      case "loadGame" =>
+      case "saveGame" =>
+      case _ => print("Falsche Eingabe!\n")
     }
+    continue
   }
 
   def beatOrPush(): Unit = {
@@ -153,6 +164,22 @@ class Tui(c: Controller) extends Reactor {
     }
   }
 
+  // Kann eine Aktion durchgefuehrt werden?
+  def cantDoAnything: Unit = {
+    for (cardFromHand <- c.actualPlayer.cardOnHand) {
+      if (!(c.canPushCard(c.cardOnField, cardFromHand))) pullCard
+      for (cardFromField <- c.cardOnField) {
+        if (!(c.canBeatCard(cardFromField, cardFromHand))) pullCard
+      }
+    }
+  }
+
+  def pullCard: Unit = {
+    c.actualPlayer.cardOnHand ++= c.beatenCard
+    c.cardOnField.clear()
+    print("Karten werden aufgenommen!\n")
+  }
+
   def initialize(): Unit = {
     print("Das Spiel beginnt nun.\n")
   }
@@ -170,6 +197,7 @@ class Tui(c: Controller) extends Reactor {
         print(" ? ")
       }
     }
+
   }
 
   def saveGame: Unit = {

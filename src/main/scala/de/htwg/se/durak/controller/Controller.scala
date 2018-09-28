@@ -13,6 +13,8 @@ case class Start()
 
 case class GameStart()
 
+case class mainMenu() extends Event
+
 case class GameNew()
 
 case class saveGame() extends Event
@@ -170,7 +172,7 @@ class Controller extends ControllerInterface {
   // Mische das Deck
   def mixDeck(): Unit = {
     val r = scala.util.Random
-    for (i <- 0 to deck.length - 1) {
+    for (i <- deck.deck.indices) {
       val tmp = r.nextInt(deck.deck.length + 1)
       val tmpCard = deck.deck(i)
       deck.deck(i) = deck.deck(tmp)
