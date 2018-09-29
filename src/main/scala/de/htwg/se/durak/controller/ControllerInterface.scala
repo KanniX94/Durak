@@ -7,6 +7,7 @@ import scala.collection.mutable.ArrayBuffer
 import scala.swing.Publisher
 
 trait ControllerInterface extends Publisher {
+  val r = scala.util.Random
   var playerInGame: Array[PlayerInterface] = null
   var playerName: Array[String] = Array("Marcel", "Christoph", "Bernd", "Simone")
   var amountOfPlayer = 0
@@ -21,6 +22,7 @@ trait ControllerInterface extends Publisher {
   var cardsLeft = 0
 
   def initialize(amountOfPlayer: Int)
+
   def setDifficulty(dif: Int)
 
   // Sind alle Karten auf dem Spielfeld gleich?

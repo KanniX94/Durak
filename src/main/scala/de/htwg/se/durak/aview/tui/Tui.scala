@@ -71,18 +71,17 @@ class Tui(c: Controller) extends Reactor {
   def interpret(input: String) = {
     var continue = true
 
-    condition match {
+    input match {
       case "quit" => continue = false
-      case "reset" =>
-      case "startGame" => initialize()
+      case "reset" => c.gameReset()
       case "difficulty" => setDifficulty(input.toInt)
-      case "amountPlayer" => setAmountPlayer(input)
-      case "attackPlayer" => attackPlayer(input, c.actualPlayer)
+      case "amountPlayer" => setAmountPlayer("4")
+      case "attack" => attackPlayer(input, c.actualPlayer)
       case "chooseCard" =>
-      case "pushCard" =>
-      case "beatCard" =>
-      case "loadGame" =>
-      case "saveGame" =>
+      case "push" =>
+      case "beat" =>
+      case "load" =>
+      case "save" =>
       case _ => print("Falsche Eingabe!\n")
     }
     continue
@@ -165,13 +164,14 @@ class Tui(c: Controller) extends Reactor {
   }
 
   // Kann eine Aktion durchgefuehrt werden?
-  def cantDoAnything: Unit = {
+  def cantDoAnything: Boolean = {
     for (cardFromHand <- c.actualPlayer.cardOnHand) {
-      if (!(c.canPushCard(c.cardOnField, cardFromHand))) pullCard
+      if (!(c.canPushCard(c.cardOnField, cardFromHand))) false
       for (cardFromField <- c.cardOnField) {
-        if (!(c.canBeatCard(cardFromField, cardFromHand))) pullCard
+        if (!(c.canBeatCard(cardFromField, cardFromHand))) false
       }
     }
+    true
   }
 
   def pullCard: Unit = {

@@ -45,15 +45,14 @@ class Controller extends ControllerInterface {
   def initialize(amountOfPlayer: Int): Unit = {
     publish(new AmountPlayer)
     deck.init()
-    mixDeck()
+    mixDeck(determineMixedDeck(), deck.deck.length)
     this.amountOfPlayer = amountOfPlayer
     playerInGame = new Array[PlayerInterface](amountOfPlayer)
     for (player <- 0 to playerInGame.length - 1) {
       playerInGame(player) = Player(playerName(player))
     }
-    dealOut()
-    printPlayerState()
     gameReset()
+    printPlayerState()
   }
 
   def gameReset(): Unit = {
@@ -76,19 +75,10 @@ class Controller extends ControllerInterface {
   }
 
   def printPlayerState(): Unit = {
-    print(playerInGame(0).toString + "\n")
+    /*print(playerInGame(0).toString + "\n")
     for (card <- playerInGame(0).cardOnHand) {
       print(card.name + "\n")
-    }
-  }
-
-  def cheat(): Unit = {
-    for (player <- playerInGame) {
-      print(player.toString + "\n")
-      for (card <- player.cardOnHand)
-        print(card.name + "\n")
-      print("\n")
-    }
+    }*/
   }
 
   def beatCard(attackCard: Int, beatCard: Int): Unit = {
@@ -172,16 +162,19 @@ class Controller extends ControllerInterface {
   // Ist gelegte Karte eine Trumpfkarte?
   def isTrump(card: Card): Boolean = if (card.symbol == trumpCard.symbol) true else false
 
-
   // Mische das Deck
-  def mixDeck(): Unit = {
-    val r = scala.util.Random
-    for (i <- deck.deck.indices) {
-      val tmp = r.nextInt(deck.deck.length + 1)
-      val tmpCard = deck.deck(i)
-      deck.deck(i) = deck.deck(tmp)
-      deck.deck(tmp) = tmpCard
+  def mixDeck(list: List[Int], count: Int): Unit = {
+    for (i <- 0 to count - 1) {
+      for (j <- list) {
+        val tmpCard = deck.deck(i)
+        deck.deck(i) = deck.deck(j)
+        deck.deck(j) = tmpCard
+      }
     }
+  }
+
+  def determineMixedDeck(): List[Int] = {
+    r.shuffle(0.to(31).toList)
   }
 
   // Ermittle zufaelligen Trumpf
@@ -189,5 +182,32 @@ class Controller extends ControllerInterface {
     val r = scala.util.Random
     val tmp = r.nextInt(deck.deck.length - 1)
     deck.deck(tmp)
+  }
+
+
+
+
+  // ONLY FOR CHEATING!
+
+  def cheat(): Unit = {
+    printEnemyHand
+    printDeck()
+  }
+
+  def printDeck(): Unit = {
+    print("Im aktuellen Deck sind noch folgende Karten\n")
+    for (i <- deck.deck) {
+      print(i.name + "\n")
+    }
+  }
+
+  def printEnemyHand(): Unit = {
+    print("Die Spieler haben folgende Karten auf der Hand\n")
+    for (player <- playerInGame) {
+      print(player.toString + "\n")
+      for (card <- player.cardOnHand)
+        print(card.name + "\n")
+      print("\n")
+    }
   }
 }
