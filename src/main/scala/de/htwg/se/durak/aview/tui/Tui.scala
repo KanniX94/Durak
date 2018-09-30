@@ -2,12 +2,16 @@ package de.htwg.se.durak.aview.tui
 
 import de.htwg.se.durak.controller._
 import de.htwg.se.durak.model._
+import de.htwg.se.durak.util.Observable
+import de.htwg.se.durak.util.Observer
+
+import com.typesafe.scalalogging.{LazyLogging, LazyLogging}
 
 import swing._
 
-class Tui(c: Controller) extends Reactor {
+class Tui(c: Controller) extends Reactor with LazyLogging {
 
-  var condition = "startGame"
+  var condition = "amountPlayer"
 
   listenTo(c)
 
@@ -17,11 +21,7 @@ class Tui(c: Controller) extends Reactor {
       printGameStart
       condition = "startGame"
     }
-    case e: StartRound => {
-      gameState
-      printGameStart
-      condition = "startGame"
-    }
+
     case e: GameNew => {
       printGameStart
       condition = "startGame"
@@ -37,7 +37,8 @@ class Tui(c: Controller) extends Reactor {
       condition = "difficulty"
     }
     case e: AttackPlayer => {
-
+      print("Du bist an der Reihe!\n")
+      print("Mit welcher Karte moechtest du angreifen?\n")
     }
     case e: PushCard => {
 
@@ -54,42 +55,72 @@ class Tui(c: Controller) extends Reactor {
     case e: GameWon => {
       won
     }
-  }
+    case e: saveGame => {
+      print("Moechtest du das Spiel wirklich speichern? (ja|nein)\n")
+      condition = "saveGame"
+    }
+    case e: loadGame => {
+      print("Moechtest du das Spiel wirklich laden? (ja|nein)\n")
+      condition = "loadGame"
+    }
+    case e: mainMenu => {
 
+    }
+  }
 
   var difficulty = 1
+  var continue = true
 
-  def interpret(input: String): Unit = {
-    condition match {
-      case "startGame" => initialize()
+  def interpret(input: String) = {
+
+    input match {
+      case "quit" => continue = false
+      case "init" => c.gameReset()
       case "difficulty" => setDifficulty(input.toInt)
-      case "amountPlayer" => setAmountPlayer(input)
-      case "attackPlayer" => attackPlayer(input, c.actualPlayer)
-      case "chooseCard" =>
-      case "pushCard" =>
-      case "beatCard" =>
+      case "amountPlayer" => setAmountPlayer("4")
+      case "attack" => attackPlayer(input, c.actualPlayer)
+      case "chooseCard" => {
+
+      }
+      case "push" => {
+        print("Du willst also schieben du Schlawiener!")
+        state = "push"
+      }
+      case "beat" => {
+        print("Du willst also schalgen du Schlawiener!")
+        state = "beat"
+      }
+      case "load" =>
+      case "save" =>
       case _ => {
+        state match {
+          case "beatOrPush" => {
+
+          }
+        }
       }
     }
+    continue
   }
 
-  def chooseOrPush(): Unit = {
+  def beatOrPush(): Unit = {
     print("Moechtest du schlagen oder schieben?\n")
-    print("(1 = schlagen | 2 = schieben)\n")
+    print("(beat | push)\n")
 
   }
 
-  def chooseCard(): Unit = {
+  def chooseCardOnField(): Unit = {
     print("Welche Karte moechtest du schlagen?\n")
     for (i <- 0 to c.cardOnField.length - 1) {
-      print(i + 1 + " = " + c.cardOnField(i) + " | ")
+      print(i + 1 + " = " + c.cardOnField(i).name + " | ")
     }
-    print("Mit welcher Karte moechtest du schlagen?\n")
-    for (i <- 0 to c.actualPlayer.cardOnHand.length - 1) {
-      print(i + 1 + " = " + c.actualPlayer.cardOnHand(i) + " | ")
+  }
+
+  def chooseCardOnHand(): Unit = {
+    print("Welche Karte moechtest du auswaehlen?\n")
+    for (i <- 0 to c.playerInGame(0).cardOnHand.length - 1) {
+      print(i + 1 + " = " + c.playerInGame(0).cardOnHand(i).name + " | ")
     }
-
-
   }
 
   def beatCard(attackCard: Int, beatCard: Int): Unit = {
@@ -121,12 +152,12 @@ class Tui(c: Controller) extends Reactor {
   }
 
   def won: Unit = {
-    //deafTo(c)
+    deafTo(c)
     print("Du hast gewonnen!\n")
   }
 
   def lost: Unit = {
-    //deafTo(c)
+    deafTo(c)
     print("Du bist ein Durak!\n")
   }
 
@@ -148,6 +179,23 @@ class Tui(c: Controller) extends Reactor {
     }
   }
 
+  // Kann eine Aktion durchgefuehrt werden?
+  def cantDoAnything: Boolean = {
+    for (cardFromHand <- c.actualPlayer.cardOnHand) {
+      if (!(c.canPushCard(c.cardOnField, cardFromHand))) false
+      for (cardFromField <- c.cardOnField) {
+        if (!(c.canBeatCard(cardFromField, cardFromHand))) false
+      }
+    }
+    true
+  }
+
+  def pullCard: Unit = {
+    c.actualPlayer.cardOnHand ++= c.beatenCard
+    c.cardOnField.clear()
+    print("Karten werden aufgenommen!\n")
+  }
+
   def initialize(): Unit = {
     print("Das Spiel beginnt nun.\n")
   }
@@ -165,6 +213,20 @@ class Tui(c: Controller) extends Reactor {
         print(" ? ")
       }
     }
+
+  }
+
+  def saveGame: Unit = {
+
+  }
+
+  def loadGame: Unit = {
+
+  }
+
+  def exit: Unit = {
+    print("Das Spiel wird nun beendet!\n")
+    exit
   }
 
   def printGameStart: Unit = {

@@ -1,20 +1,17 @@
 package de.htwg.se.durak
 
 import de.htwg.se.durak.aview.tui.Tui
-import de.htwg.se.durak.controller.Controller
-import de.htwg.se.durak.model.exactImpl.{Card, Deck, Player}
+import de.htwg.se.durak.controller.{Controller, ControllerInterface}
+import com.google.inject.Guice
 
-import scala.collection.mutable.ArrayBuffer
-import scala.io.StdIn
+import scala.io.StdIn._
 
 object durakGame {
-  def main(args: Array[String]): Unit = {
-    val c = new Controller()
-    val tui = new Tui(c)
+  val injector = Guice.createInjector(new DurakModule)
+  val c = injector.getInstance(classOf[ControllerInterface])
+  val tui = new Tui(c)
 
-    while (true) {
-      val input = StdIn.readLine()
-      tui.interpret(input)
-    }
+  def main(args: Array[String]): Unit = {
+    while (tui.interpret(readLine())) {}
   }
 }
