@@ -55,16 +55,19 @@ class Controller extends ControllerInterface {
     printPlayerState()
   }
 
+  // Spiel wird auf Anfangszustand zurueckgesetzt
   def gameReset(): Unit = {
     dealOut()
     setActualPlayer()
   }
 
+  // Aktueller Spieler wird ausgewaehlt, damit dieser schlagen, schieben, etc. kann
   def setActualPlayer(): Unit = {
     val r = scala.util.Random
     actualPlayer = playerInGame(r.nextInt(playerInGame.length))
   }
 
+  // Karten an alle Spieler ausgeben (vor jeder Runde)
   def dealOut(): Unit = {
     for (i <- playerInGame) {
       while (i.cardOnHand.length < 6 && !deck.isEmpty()) {
@@ -74,6 +77,7 @@ class Controller extends ControllerInterface {
     }
   }
 
+  // Karten des menschlichen Spielers ausgeben
   def printPlayerState(): Unit = {
     /*print(playerInGame(0).toString + "\n")
     for (card <- playerInGame(0).cardOnHand) {
@@ -81,6 +85,7 @@ class Controller extends ControllerInterface {
     }*/
   }
 
+  // Ausgewaehlte Karte wird geschlagen und temporaer gespeichert werden
   def beatCard(attackCard: Int, beatCard: Int): Unit = {
     if (attackCard <= cardOnField.length - 1) {
       if (canBeatCard(cardOnField(attackCard), actualPlayer.cardOnHand(beatCard))) {
@@ -91,6 +96,7 @@ class Controller extends ControllerInterface {
     }
   }
 
+  // Schwierigkeitsgrad fuer den Computergegner
   def setDifficulty(dif: Int): Unit = {
     difficulty = dif
   }
@@ -99,6 +105,7 @@ class Controller extends ControllerInterface {
     cardOnField.append(card)
   }
 
+  // Computergegner soll je nach schwierigkeitsgrad angreifen
   def cpuAttacks(): Unit = {
     val r = scala.util.Random
     val attackChance = r.nextInt(3) + 1
@@ -122,7 +129,6 @@ class Controller extends ControllerInterface {
       }
     }
   }
-
 
   // Sind alle Karten auf dem Feld gleich, sodass geschoben werden kann?
   def canPushCard(cardOnField: ArrayBuffer[Card], cardFromHand: Card): Boolean = {
@@ -173,9 +179,7 @@ class Controller extends ControllerInterface {
     }
   }
 
-  def determineMixedDeck(): List[Int] = {
-    r.shuffle(0.to(31).toList)
-  }
+  def determineMixedDeck(): List[Int] = r.shuffle(0.to(allCards).toList)
 
   // Ermittle zufaelligen Trumpf
   def determineTrump(): Card = {
@@ -183,8 +187,6 @@ class Controller extends ControllerInterface {
     val tmp = r.nextInt(deck.deck.length - 1)
     deck.deck(tmp)
   }
-
-
 
 
   // ONLY FOR CHEATING!

@@ -14,6 +14,7 @@ trait ControllerInterface extends Publisher {
   var actualPlayer: PlayerInterface = null
 
   var deck: exactImpl.Deck = null
+  val allCards = 31
   var trumpCard: Card
   var cardOnField: ArrayBuffer[Card] = null
   var beatenCard: ArrayBuffer[Card] = null

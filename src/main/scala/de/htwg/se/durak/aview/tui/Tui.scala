@@ -5,6 +5,8 @@ import de.htwg.se.durak.model._
 import de.htwg.se.durak.util.Observable
 import de.htwg.se.durak.util.Observer
 
+import com.typesafe.scalalogging.{LazyLogging, LazyLogging}
+
 import swing._
 
 class Tui(c: Controller) extends Reactor {
@@ -67,29 +69,43 @@ class Tui(c: Controller) extends Reactor {
   }
 
   var difficulty = 1
+  var continue = true
 
   def interpret(input: String) = {
-    var continue = true
 
     input match {
       case "quit" => continue = false
-      case "reset" => c.gameReset()
+      case "init" => c.gameReset()
       case "difficulty" => setDifficulty(input.toInt)
       case "amountPlayer" => setAmountPlayer("4")
       case "attack" => attackPlayer(input, c.actualPlayer)
-      case "chooseCard" =>
-      case "push" =>
-      case "beat" =>
+      case "chooseCard" => {
+
+      }
+      case "push" => {
+        print("Du willst also schieben du Schlawiener!")
+        state = "push"
+      }
+      case "beat" => {
+        print("Du willst also schalgen du Schlawiener!")
+        state = "beat"
+      }
       case "load" =>
       case "save" =>
-      case _ => print("Falsche Eingabe!\n")
+      case _ => {
+        state match {
+          case "beatOrPush" => {
+
+          }
+        }
+      }
     }
     continue
   }
 
   def beatOrPush(): Unit = {
     print("Moechtest du schlagen oder schieben?\n")
-    print("(1 = schlagen | 2 = schieben)\n")
+    print("(beat | push)\n")
 
   }
 
