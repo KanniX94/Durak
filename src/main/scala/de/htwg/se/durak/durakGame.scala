@@ -1,8 +1,9 @@
 package de.htwg.se.durak
 
 import de.htwg.se.durak.aview.tui.Tui
-import de.htwg.se.durak.controller.Controller
+import de.htwg.se.durak.controller.{Controller, ControllerInterface}
 import com.google.inject.Guice
+
 import scala.io.StdIn._
 
 object durakGame {

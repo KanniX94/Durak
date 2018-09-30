@@ -32,5 +32,8 @@
     <orderEntry type="library" name="sbt: org.scalactic:scalactic_2.12:3.0.4:jar" level="project" />
     <orderEntry type="library" name="sbt: org.scala-lang.modules:scala-parser-combinators_2.12:1.0.4:jar" level="project" />
     <orderEntry type="library" name="sbt: org.scala-lang:scala-reflect:2.12.1:jar" level="project" />
+    <orderEntry type="library" name="aopalliance" level="project" />
+    <orderEntry type="library" name="guava-25.1-android" level="project" />
+    <orderEntry type="library" name="inject" level="project" />
   </component>
 </module>

@@ -9,7 +9,7 @@ import com.typesafe.scalalogging.{LazyLogging, LazyLogging}
 
 import swing._
 
-class Tui(c: Controller) extends Reactor {
+class Tui(c: Controller) extends Reactor with LazyLogging {
 
   var condition = "amountPlayer"
 
