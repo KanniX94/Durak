@@ -1,7 +1,7 @@
-package de.htwg.se.durak.controller
+package de.htwg.se.durak.controller.controllerComponent
 
-import de.htwg.se.durak.model.exactImpl._
-import de.htwg.se.durak.model._
+import de.htwg.se.durak.model.exactImpl.Card
+import de.htwg.se.durak.model.{PlayerInterface, exactImpl}
 
 import scala.collection.mutable.ArrayBuffer
 import scala.swing.Publisher

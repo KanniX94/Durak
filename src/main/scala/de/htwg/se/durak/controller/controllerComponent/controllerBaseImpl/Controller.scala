@@ -1,5 +1,6 @@
-package de.htwg.se.durak.controller
+package de.htwg.se.durak.controller.controllerComponent.controllerBaseImpl
 
+import de.htwg.se.durak.controller.controllerComponent.ControllerInterface
 import de.htwg.se.durak.model._
 import de.htwg.se.durak.model.exactImpl._
 import de.htwg.se.durak.util.Observable
