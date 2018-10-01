@@ -4,11 +4,13 @@ import com.google.inject.Guice
 import com.google.inject.name.Names
 import net.codingwell.scalaguice.InjectorExtensions._
 import de.htwg.se.durak.durakGameModule
+import de.htwg.se.durak.model.FieldComponent.FieldInterface
 import de.htwg.se.durak.model.fileIoComponent.FileIoInterface
-import de.htwg.se.durak.model.fieldComponent.{PlayerInterface, DeckInterface}
+import de.htwg.se.durak.model.FieldComponent.PlayerInterface
+import de.htwg.se.durak.model.FieldComponent.DeckInterface
 import play.api.libs.json._
 
-import scala.util.{Try, Success, Failure}
+import scala.util.{Failure, Success, Try}
 import scala.io.Source
 
 class FileIo extends FileIoInterface {
@@ -63,25 +65,11 @@ class FileIo extends FileIoInterface {
 
     Try {
       val pw = new PrintWriter(new File(FILE_NAME))
-      pw.write(Json.prettyPrint(gridToJson(grid)))
+      pw.write(Json.prettyPrint(fieldToJson(field)))
       pw.close
     }
   }
 
-  def gridToJson(grid: GridInterface) = grid.toJson
+  def fieldToJson(field: FieldInterface) = field.toJson
 
 }
-
-© 2018 GitHub, Inc.
-Terms
-Privacy
-Security
-Status
-Help
-Contact GitHub
-Pricing
-API
-Training
-Blog
-About
-Press h to open a hovercard with more details.

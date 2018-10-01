@@ -1,7 +1,7 @@
-package de.htwg.se.durak.model.exactImpl
+package de.htwg.se.durak.model.FieldComponent.FieldBaseImpl
 
 import de.htwg.se.durak.model.FieldComponent.FieldInterface
-import de.htwg.se.durak.model.{Item, PlayerInterface}
+import de.htwg.se.durak.model.PlayerInterface
 
 import scala.collection.mutable.ArrayBuffer
 

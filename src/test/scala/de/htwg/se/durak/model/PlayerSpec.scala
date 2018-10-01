@@ -1,6 +1,7 @@
 package de.htwg.se.durak.model
 
-import de.htwg.se.durak.model.exactImpl.Card
+import de.htwg.se.durak.model.FieldComponent.FieldBaseImpl
+import de.htwg.se.durak.model.FieldComponent.FieldBaseImpl.{Card, Deck, Player}
 import org.scalatest._
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
@@ -10,17 +11,17 @@ import scala.collection.mutable.ArrayBuffer
 @RunWith(classOf[JUnitRunner])
 class PlayerSpec extends WordSpec with Matchers {
   "A Player" when {
-    val player = exactImpl.Player("Marcel")
+    val player = Player("Marcel")
     "new" should {
       "have a name" in {
         player.name should be("Marcel")
       }
     }
     "push all cards on field" when {
-      var deck = exactImpl.Deck()
+      var deck = Deck()
       val cardOnField: ArrayBuffer[Card] = ArrayBuffer(Card("7 Herz", 7, "H"), Card("7 Piek", 7, "P"))
       "the cards have the same value" in {
-        val cardOnHand = exactImpl.Card("7 Kreuz", 7, "K")
+        val cardOnHand = FieldBaseImpl.Card("7 Kreuz", 7, "K")
         player.pushCard(cardOnHand)
         //deck.canPushCard(cardOnField, cardOnHand) should be(true)
       }

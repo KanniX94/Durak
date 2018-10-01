@@ -4,68 +4,19 @@ import de.htwg.se.durak.controller._
 import de.htwg.se.durak.model._
 import de.htwg.se.durak.util.Observable
 import de.htwg.se.durak.util.Observer
-import com.typesafe.scalalogging.LazyLogging
+//import com.typesafe.scalalogging.LazyLogging
 import de.htwg.se.durak.controller.controllerComponent.ControllerInterface
 
 import swing._
 
-class Tui(c: ControllerInterface) extends Reactor with LazyLogging {
+class Tui(c: ControllerInterface) extends Reactor {
 
   var condition = "amountPlayer"
 
   listenTo(c)
 
   reactions += {
-    case e: Start => {
-      initialize()
-      printGameStart
-      condition = "startGame"
-    }
-
-    case e: GameNew => {
-      printGameStart
-      condition = "startGame"
-    }
-    case e: AmountPlayer => {
-      print("Wie viele Spieler spielen mit? (min 2, max 4)\n")
-      condition = "amountPlayer"
-    }
-    case e: Difficulty => {
-      print("Wie schwer soll das Spiel werden?\n")
-      print("1 = leicht | 2 = mittel | 3 = schwer\n")
-      this.difficulty = c.difficulty
-      condition = "difficulty"
-    }
-    case e: AttackPlayer => {
-      print("Du bist an der Reihe!\n")
-      print("Mit welcher Karte moechtest du angreifen?\n")
-    }
-    case e: PushCard => {
-
-    }
-    case e: BeatCard => {
-
-    }
-    case e: PutCard => {
-
-    }
-    case e: GameLost => {
-      lost
-    }
-    case e: GameWon => {
-      won
-    }
-    case e: saveGame => {
-      print("Moechtest du das Spiel wirklich speichern? (ja|nein)\n")
-      condition = "saveGame"
-    }
-    case e: loadGame => {
-      print("Moechtest du das Spiel wirklich laden? (ja|nein)\n")
-      condition = "loadGame"
-    }
-    case e: mainMenu => {
-
-    }
+    case event: FieldChanged => printGameStart
   }
 
   var difficulty = 1
@@ -101,19 +52,6 @@ class Tui(c: ControllerInterface) extends Reactor with LazyLogging {
       }
     }
     continue
-  }
-
-  def beatOrPush(): Unit = {
-    print("Moechtest du schlagen oder schieben?\n")
-    print("(beat | push)\n")
-
-  }
-
-  def chooseCardOnField(): Unit = {
-    print("Welche Karte moechtest du schlagen?\n")
-    for (i <- 0 to c.cardOnField.length - 1) {
-      print(i + 1 + " = " + c.cardOnField(i).name + " | ")
-    }
   }
 
   def chooseCardOnHand(): Unit = {

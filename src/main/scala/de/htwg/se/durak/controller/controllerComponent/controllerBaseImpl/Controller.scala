@@ -22,7 +22,7 @@ import scala.collection.mutable.ArrayBuffer
 import scala.swing.{Reactions, RefSet}
 import scala.swing.event.Event
 
-class Controller @Inject()(var field: FieldInterface) extends ControllerInterface {
+class Controller @Inject()(var field: FieldInterface) extends ControllerInterface with LazyLogging {
 
   var gameStatus: GameStatus = IDLE
   private val undoManager = new UndoManager

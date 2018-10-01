@@ -1,7 +1,6 @@
-package de.htwg.se.durak.model.exactImpl
+package de.htwg.se.durak.model.FieldComponent.FieldBaseImpl
 
-import de.htwg.se.durak.model.{DeckInterface, Item}
-
+import de.htwg.se.durak.model.DeckInterface
 import scala.collection.mutable.ArrayBuffer
 
 case class Deck() extends DeckInterface[Card] {
