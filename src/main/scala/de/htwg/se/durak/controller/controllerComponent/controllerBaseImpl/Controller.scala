@@ -1,73 +1,62 @@
 package de.htwg.se.durak.controller.controllerComponent.controllerBaseImpl
 
+
+import com.google.inject.name.Names
+import com.google.inject.{Guice, Inject}
+import net.codingwell.scalaguice.InjectorExtensions._
 import de.htwg.se.durak.controller.controllerComponent.ControllerInterface
+import de.htwg.se.durak.controller.controllerComponent.GameStatus._
+import de.htwg.se.durak.durakGameModule
+import de.htwg.se.durak.model.FieldComponent.FieldBaseImpl.{Card, Deck, Player}
 import de.htwg.se.durak.model._
-import de.htwg.se.durak.model.exactImpl._
+import de.htwg.se.durak.model.fileIoComponent.FileIoInterface
 import de.htwg.se.durak.util.Observable
+import play.api.libs.json.JsValue
+import de.htwg.se.durak.util.UndoManager
+
+import scala.util.{Failure, Success}
+import com.typesafe.scalalogging.{LazyLogging, Logger}
+import de.htwg.se.durak.model.FieldComponent.FieldInterface
 
 import scala.collection.mutable.ArrayBuffer
 import scala.swing.{Reactions, RefSet}
 import scala.swing.event.Event
 
-case class Difficulty()
+class Controller @Inject()(var field: FieldInterface) extends ControllerInterface {
 
-case class Start()
-
-case class GameStart()
-
-case class mainMenu() extends Event
-
-case class GameNew()
-
-case class saveGame() extends Event
-
-case class loadGame() extends Event
-
-case class AmountPlayer() extends Event
-
-case class AttackPlayer()
-
-case class PushCard()
-
-case class BeatCard()
-
-case class PutCard()
-
-case class GameLost()
-
-case class GameWon()
-
-abstract class Controller extends ControllerInterface {
+  var gameStatus: GameStatus = IDLE
+  private val undoManager = new UndoManager
+  val injector = Guice.createInjector(new durakGameModule)
+  val fileIo = injector.instance[FileIoInterface]
 
   val r = scala.util.Random
-  var playerInGame: Array[PlayerInterface] = _
-  var playerName: Array[String] = Array("Marcel", "Christoph", "Bernd", "Simone")
-  var amountOfPlayer = 0
-  var actualPlayer: PlayerInterface = setActualPlayer()
+  var playerInGame: Array[Player] = _
+  var playerName: Array[String] = Array("Marcel", "CPU1")
+  var amountOfPlayer = 2
+  var actualPlayer: Player = setActualPlayer()
 
   val allCards = 31
-  var trumpCard: Card = determineTrump
-
-  var difficulty = 0
   var cardsLeft = 0
 
   var cardOnField: ArrayBuffer[Card] = _
-  var beatenCard: ArrayBuffer[Card] = _
   var deck = new Deck()
 
   def initialize(amountOfPlayer: Int): Unit = {
-    publish(new AmountPlayer)
     deck.init()
     cardsLeft = allCards + 1
-    trumpCard = determineTrump
     mixDeck(determineMixedDeck(), deck.deck.length)
     this.amountOfPlayer = amountOfPlayer
-    playerInGame = new Array[PlayerInterface](amountOfPlayer)
+    playerInGame = new Array[Player](amountOfPlayer)
     for (player <- 0 to playerInGame.length - 1) {
       playerInGame(player) = Player(playerName(player))
     }
     gameReset()
     printPlayerState()
+  }
+
+  def createEmptyField: Unit = {
+    injector.instance[FieldInterface](Names.named("Feld"))
+    publish(new FieldChanged)
   }
 
   // Spiel wird auf Anfangszustand zurueckgesetzt
@@ -77,7 +66,7 @@ abstract class Controller extends ControllerInterface {
   }
 
   // Aktueller Spieler wird ausgewaehlt, damit dieser schlagen, schieben, etc. kann
-  def setActualPlayer(): PlayerInterface = {
+  def setActualPlayer(): Player = {
     val r = scala.util.Random
     playerInGame(r.nextInt(playerInGame.length))
   }
@@ -85,7 +74,7 @@ abstract class Controller extends ControllerInterface {
   // Karten an alle Spieler ausgeben (vor jeder Runde)
   def dealOut(): Unit = {
     for (i <- playerInGame) {
-      while (i.cardOnHand.length < 6 && !deck.isEmpty()) {
+      while (!deck.isEmpty() && deck.deck.length % 16 != 0) {
         i.cardOnHand.append(deck.dealOut())
         cardsLeft -= 1
       }
@@ -94,98 +83,52 @@ abstract class Controller extends ControllerInterface {
 
   // Karten des menschlichen Spielers ausgeben
   def printPlayerState(): Unit = {
-    /*print(playerInGame(0).toString + "\n")
+    print(playerInGame(0).toString + "\n")
     for (card <- playerInGame(0).cardOnHand) {
       print(card.name + "\n")
-    }*/
-  }
-
-  // Ausgewaehlte Karte wird geschlagen und temporaer gespeichert werden
-  def beatCard(attackCard: Int, beatCard: Int): Unit = {
-    if (attackCard <= cardOnField.length - 1) {
-      if (canBeatCard(cardOnField(attackCard), actualPlayer.cardOnHand(beatCard))) {
-        beatenCard.append(cardOnField(attackCard))
-        beatenCard.append(actualPlayer.cardOnHand(beatCard))
-        cardOnField.remove(cardOnField.indexOf(cardOnField(attackCard)))
-      }
     }
-  }
-
-  // Schwierigkeitsgrad fuer den Computergegner
-  def setDifficulty(dif: Int): Unit = {
-    difficulty = dif
   }
 
   def attack(card: Card): Unit = {
     cardOnField.append(card)
   }
 
-  // Computergegner soll je nach schwierigkeitsgrad angreifen
-  def cpuAttacks(): Unit = {
-    val r = scala.util.Random
-    val attackChance = r.nextInt(3) + 1
-    difficulty match {
-      case 2 => {
-        for (cpuPlayer <- 1 to playerInGame.length + 1) {
-          for (i <- playerInGame(cpuPlayer).cardOnHand)
-            if (attackChance <= 2 && canLayCard(cardOnField, i)) {
-              attack(i)
-            }
+  // Computergegner soll angreifen
+  def cpuBeat(cardFromField: Card): Unit = {
+    if (cardOnField.isEmpty) {
+      var lowestCard: Card = Card("Joker", allCards, "j")
+      for (card <- playerInGame(1).cardOnHand) {
+        if (card.value < lowestCard.value) {
+          lowestCard = card
         }
       }
-      case 3 => {
-        for (cpuPlayer <- 1 to playerInGame.length + 1) {
-          for (i <- playerInGame(cpuPlayer).cardOnHand) {
-            if (canLayCard(cardOnField, i)) {
-              attack(i)
-            }
+      cardOnField.append(lowestCard)
+    } else {
+      for (card <- playerInGame(1).cardOnHand) {
+        if (canBeatCard(cardFromField, card)) {
+          cardOnField.append(card)
+        }
+        else {
+          for (card <- cardOnField) {
+            playerInGame(1).cardOnHand.append(card)
           }
         }
       }
     }
   }
 
-  // Sind alle Karten auf dem Feld gleich, sodass geschoben werden kann?
-  def canPushCard(cardOnField: ArrayBuffer[Card], cardFromHand: Card): Boolean = {
-    var equalCards = cardOnField(0).value
-    for (i <- 1 to cardOnField.length - 1) {
-      if (cardOnField(i).value != equalCards) {
-        false
-      }
-      equalCards = cardOnField(i + 1).value
-    }
-    true
-  }
-
   // Kann die Karte geschlagen werden?
   def canBeatCard(cardFromField: Card, cardFromHand: Card): Boolean = {
-    if ((cardFromHand.value > cardFromField.value &&
-      cardFromHand.symbol == cardFromField.symbol) ||
-      (!isTrump(cardFromField) && isTrump(cardFromHand)) ||
-      (isTrump(cardFromHand) && isTrump(cardFromField) &&
-        cardFromHand.value > cardFromField.value)) {
+    if (cardFromHand.value > cardFromField.value) {
       true
     } else {
       false
     }
   }
 
-  // Kann ein Gegner seine Karte dazu legen?
-  def canLayCard(cardOnField: ArrayBuffer[Card], cardFromHand: Card): Boolean = {
-    for (i <- 0 to cardOnField.length - 1) {
-      if (cardOnField(i).value != cardFromHand.value) {
-        false
-      }
-    }
-    true
-  }
-
-  // Ist gelegte Karte eine Trumpfkarte?
-  def isTrump(card: Card): Boolean = if (card.symbol == trumpCard.symbol) true else false
-
   // Mische das Deck
   def mixDeck(list: List[Int], count: Int): Unit = {
-    for (i <- 0 to count - 1) {
+    for (i <- 0 until count - 1) {
       for (j <- list) {
         val tmpCard = deck.deck(i)
         deck.deck(i) = deck.deck(j)
@@ -196,18 +139,10 @@ abstract class Controller extends ControllerInterface {
 
   def determineMixedDeck(): List[Int] = r.shuffle(0.to(allCards).toList)
 
-  // Ermittle zufaelligen Trumpf
-  def determineTrump(): Card = {
-    val r = scala.util.Random
-    val tmp = r.nextInt(deck.deck.length - 1)
-    deck.deck(tmp)
-  }
-
-
   // ONLY FOR CHEATING!
 
   def cheat(): Unit = {
-    printEnemyHand
+    printEnemyHand()
     printDeck()
   }
 
@@ -227,4 +162,54 @@ abstract class Controller extends ControllerInterface {
       print("\n")
     }
   }
+
+  def undo: Unit = {
+    undoManager.undoStep
+    gameStatus = UNDO
+    publish(new FieldChanged)
+  }
+
+  def redo: Unit = {
+    undoManager.redoStep
+    gameStatus = REDO
+    publish(new FieldChanged)
+  }
+
+  def save: Unit = {
+    fileIo.save(field) match {
+      case Success(_) =>
+        gameStatus = SAVED
+      case Failure(e) =>
+        logger.error(
+          "Beim Speichern ist ein Fehler aufgetreten: " + e.getMessage)
+        gameStatus = COULD_NOT_SAVE
+    }
+
+    publish(new FieldChanged)
+  }
+
+  def load: Unit = {
+    val gridOptionResult = fileIo.load
+
+    gridOptionResult match {
+      case Success(gridOption) =>
+        gridOption match {
+          case Some(_field) =>
+            field = _field
+            gameStatus = LOADED
+          case None =>
+            createEmptyField
+            gameStatus = COULD_NOT_LOAD
+        }
+      case Failure(e) =>
+        logger.error(
+          "Beim Laden ist ein Fehler aufgetreten: " + e.getMessage)
+        createEmptyField
+        gameStatus = COULD_NOT_LOAD
+    }
+
+    publish(new FieldChanged)
+  }
+
+  def toJson: JsValue = _
 }

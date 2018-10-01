@@ -3,7 +3,7 @@ package de.htwg.se.durak.controller.controllerComponent
 object GameStatus extends Enumeration {
   type GameStatus = Value
   val IDLE, NEW, UNDO, REDO, LOADED, COULD_NOT_LOAD, SAVED,
-  COULT_NOT_SAVE, DIFFICULTY, PLAYER, ATTACK, PUSH, PULL, BEAT = Value
+  COULD_NOT_SAVE, DIFFICULTY, PLAYER, ATTACK, PUSH, PULL, BEAT = Value
 
   val map = Map[GameStatus, String](
     IDLE -> "",
@@ -13,7 +13,7 @@ object GameStatus extends Enumeration {
     LOADED -> "Ein Spielstand wurde geladen",
     COULD_NOT_LOAD -> "Die Datei konnte nicht geladen werden",
     SAVED -> "Das Spiel wurde gespeichert",
-    COULT_NOT_SAVE -> "Das Spiel konnte nicht gespeichert werden",
+    COULD_NOT_SAVE -> "Das Spiel konnte nicht gespeichert werden",
     ATTACK -> "Spieler wird angegriffen",
     PUSH -> "Karten werden weiter geschoben",
     PULL -> "Karten werden aufgenommen",
