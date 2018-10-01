@@ -6,6 +6,7 @@ import de.htwg.se.durak.model.exactImpl._
 import de.htwg.se.durak.util.Observable
 
 import scala.collection.mutable.ArrayBuffer
+import scala.swing.{Reactions, RefSet}
 import scala.swing.event.Event
 
 case class Difficulty()
@@ -36,16 +37,29 @@ case class GameLost()
 
 case class GameWon()
 
-class Controller extends ControllerInterface {
+abstract class Controller extends ControllerInterface {
 
-  cardOnField = new ArrayBuffer()
-  beatenCard = new ArrayBuffer()
-  deck = new Deck()
-  override var trumpCard: Card = determineTrump()
+  val r = scala.util.Random
+  var playerInGame: Array[PlayerInterface] = _
+  var playerName: Array[String] = Array("Marcel", "Christoph", "Bernd", "Simone")
+  var amountOfPlayer = 0
+  var actualPlayer: PlayerInterface = setActualPlayer()
+
+  val allCards = 31
+  var trumpCard: Card = determineTrump
+
+  var difficulty = 0
+  var cardsLeft = 0
+
+  var cardOnField: ArrayBuffer[Card] = _
+  var beatenCard: ArrayBuffer[Card] = _
+  var deck = new Deck()
 
   def initialize(amountOfPlayer: Int): Unit = {
     publish(new AmountPlayer)
     deck.init()
+    cardsLeft = allCards + 1
+    trumpCard = determineTrump
     mixDeck(determineMixedDeck(), deck.deck.length)
     this.amountOfPlayer = amountOfPlayer
     playerInGame = new Array[PlayerInterface](amountOfPlayer)
@@ -63,9 +77,9 @@ class Controller extends ControllerInterface {
   }
 
   // Aktueller Spieler wird ausgewaehlt, damit dieser schlagen, schieben, etc. kann
-  def setActualPlayer(): Unit = {
+  def setActualPlayer(): PlayerInterface = {
     val r = scala.util.Random
-    actualPlayer = playerInGame(r.nextInt(playerInGame.length))
+    playerInGame(r.nextInt(playerInGame.length))
   }
 
   // Karten an alle Spieler ausgeben (vor jeder Runde)

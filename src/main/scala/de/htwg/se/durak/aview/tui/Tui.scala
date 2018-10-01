@@ -4,12 +4,12 @@ import de.htwg.se.durak.controller._
 import de.htwg.se.durak.model._
 import de.htwg.se.durak.util.Observable
 import de.htwg.se.durak.util.Observer
-
-import com.typesafe.scalalogging.{LazyLogging, LazyLogging}
+import com.typesafe.scalalogging.LazyLogging
+import de.htwg.se.durak.controller.controllerComponent.ControllerInterface
 
 import swing._
 
-class Tui(c: Controller) extends Reactor with LazyLogging {
+class Tui(c: ControllerInterface) extends Reactor with LazyLogging {
 
   var condition = "amountPlayer"
 

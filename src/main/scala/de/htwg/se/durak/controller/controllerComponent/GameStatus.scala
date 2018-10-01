@@ -1,6 +1,6 @@
 package de.htwg.se.durak.controller.controllerComponent
 
-class GameStatus extends Enumeration {
+object GameStatus extends Enumeration {
   type GameStatus = Value
   val IDLE, NEW, UNDO, REDO, LOADED, COULD_NOT_LOAD, SAVED,
   COULT_NOT_SAVE, DIFFICULTY, PLAYER, ATTACK, PUSH, PULL, BEAT = Value

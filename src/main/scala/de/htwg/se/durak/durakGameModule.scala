@@ -6,6 +6,9 @@ import net.codingwell.scalaguice.ScalaModule
 import de.htwg.se.durak.controller.controllerComponent._
 import de.htwg.se.durak.model.fileIoComponent._
 
-class durakGameModule {
+class durakGameModule extends AbstractModule with ScalaModule {
+  def configure(): Unit = {
+    
+  }
 
 }

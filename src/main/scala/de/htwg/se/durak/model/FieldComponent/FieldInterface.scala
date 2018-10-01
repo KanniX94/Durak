@@ -1,4 +1,6 @@
-package de.htwg.se.durak.model
+package de.htwg.se.durak.model.FieldComponent
+
+import de.htwg.se.durak.model.{PlayerInterface, PositionInterface}
 
 import scala.collection.mutable.ArrayBuffer
 
