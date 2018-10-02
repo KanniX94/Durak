@@ -4,11 +4,10 @@ package de.htwg.se.durak.controller.controllerComponent.controllerBaseImpl
 import com.google.inject.name.Names
 import com.google.inject.{Guice, Inject}
 import net.codingwell.scalaguice.InjectorExtensions._
-import de.htwg.se.durak.controller.controllerComponent.ControllerInterface
+import de.htwg.se.durak.controller.controllerComponent.{ControllerInterface, FieldChanged}
 import de.htwg.se.durak.controller.controllerComponent.GameStatus._
 import de.htwg.se.durak.durakGameModule
 import de.htwg.se.durak.model.FieldComponent.FieldBaseImpl.{Card, Deck, Player}
-import de.htwg.se.durak.model._
 import de.htwg.se.durak.model.fileIoComponent.FileIoInterface
 import de.htwg.se.durak.util.Observable
 import play.api.libs.json.JsValue
@@ -19,8 +18,7 @@ import com.typesafe.scalalogging.{LazyLogging, Logger}
 import de.htwg.se.durak.model.FieldComponent.FieldInterface
 
 import scala.collection.mutable.ArrayBuffer
-import scala.swing.{Reactions, RefSet}
-import scala.swing.event.Event
+import scala.swing.{Reactions, Reactor}
 
 class Controller @Inject()(var field: FieldInterface) extends ControllerInterface with LazyLogging {
 
@@ -31,7 +29,7 @@ class Controller @Inject()(var field: FieldInterface) extends ControllerInterfac
 
   val r = scala.util.Random
   var playerInGame: Array[Player] = _
-  var playerName: Array[String] = Array("Marcel", "CPU1")
+  var playerName: Array[String] = Array("Bernd", "CPU1")
   var amountOfPlayer = 2
   var actualPlayer: Player = setActualPlayer()
 
@@ -41,16 +39,16 @@ class Controller @Inject()(var field: FieldInterface) extends ControllerInterfac
   var cardOnField: ArrayBuffer[Card] = _
   var deck = new Deck()
 
-  def initialize(amountOfPlayer: Int): Unit = {
+  def initialize(): Unit = {
     deck.init()
     cardsLeft = allCards + 1
     mixDeck(determineMixedDeck(), deck.deck.length)
-    this.amountOfPlayer = amountOfPlayer
     playerInGame = new Array[Player](amountOfPlayer)
     for (player <- 0 to playerInGame.length - 1) {
       playerInGame(player) = Player(playerName(player))
     }
-    gameReset()
+    dealOut()
+    setActualPlayer()
     printPlayerState()
   }
 
@@ -59,10 +57,11 @@ class Controller @Inject()(var field: FieldInterface) extends ControllerInterfac
     publish(new FieldChanged)
   }
 
-  // Spiel wird auf Anfangszustand zurueckgesetzt
-  def gameReset(): Unit = {
-    dealOut()
-    setActualPlayer()
+  def createNewField: Unit = {
+    injector.instance[FieldInterface](Names.named("Feld"))
+    gameStatus = NEW
+    field = field.createNewField
+    publish(new FieldChanged)
   }
 
   // Aktueller Spieler wird ausgewaehlt, damit dieser schlagen, schieben, etc. kann
@@ -93,8 +92,15 @@ class Controller @Inject()(var field: FieldInterface) extends ControllerInterfac
     cardOnField.append(card)
   }
 
+  def chooseCardOnHand(): Unit = {
+    print("Welche Karte moechtest du auswaehlen?\n")
+    for (i <- 0 to c.playerInGame(0).cardOnHand.length - 1) {
+      print(i + 1 + " = " + c.playerInGame(0).cardOnHand(i).name + " | ")
+    }
+  }
+
   // Computergegner soll angreifen
-  def cpuBeat(cardFromField: Card): Unit = {
+  def cpuBeat(): Unit = {
     if (cardOnField.isEmpty) {
       var lowestCard: Card = Card("Joker", allCards, "j")
       for (card <- playerInGame(1).cardOnHand) {
@@ -105,7 +111,7 @@ class Controller @Inject()(var field: FieldInterface) extends ControllerInterfac
       cardOnField.append(lowestCard)
     } else {
       for (card <- playerInGame(1).cardOnHand) {
-        if (canBeatCard(cardFromField, card)) {
+        if (canBeatCard(cardOnField.last, card)) {
           cardOnField.append(card)
         }
         else {
@@ -192,8 +198,8 @@ class Controller @Inject()(var field: FieldInterface) extends ControllerInterfac
     val gridOptionResult = fileIo.load
 
     gridOptionResult match {
-      case Success(gridOption) =>
-        gridOption match {
+      case Success(fieldOption) =>
+        fieldOption match {
           case Some(_field) =>
             field = _field
             gameStatus = LOADED
@@ -211,5 +217,15 @@ class Controller @Inject()(var field: FieldInterface) extends ControllerInterfac
     publish(new FieldChanged)
   }
 
-  def toJson: JsValue = _
+  def fieldToString: String = field.toString
+
+  def toJson: JsValue = ???
+
+  override def deafTo(seq: Nothing): Unit = ???
+
+  override def listenTo(seq: Nothing): Unit = ???
+
+  override def reactions(): Reactions = ???
+
+  override def reactions_$eq(reactions: Reactions): Unit = ???
 }

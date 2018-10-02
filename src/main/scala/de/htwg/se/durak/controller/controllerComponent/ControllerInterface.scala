@@ -8,13 +8,11 @@ import scala.swing.event.Event
 
 trait ControllerInterface extends Publisher {
 
-  def initialize(amountOfPlayer: Int)
+  def initialize()
 
   def createEmptyField: Unit
 
   def createNewField: Unit
-
-  class FieldChanged extends Event
 
   def undo: Unit
 
@@ -26,6 +24,10 @@ trait ControllerInterface extends Publisher {
 
   def gameStatus: GameStatus
 
+  def fieldToString: String
+
   def toJson: JsValue
 
 }
+
+class FieldChanged extends Event
