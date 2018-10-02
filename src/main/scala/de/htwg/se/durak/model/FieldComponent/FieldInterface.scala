@@ -8,6 +8,8 @@ trait FieldInterface {
   var players: ArrayBuffer[PlayerInterface] = _
   var amountOfPlayer: Int = 0
   val length: Int = 3
+
+  def createNewField: FieldInterface
 }
 
 trait DeckInterface[Card] {

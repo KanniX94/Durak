@@ -9,7 +9,6 @@ import de.htwg.se.durak.controller.controllerComponent.GameStatus._
 import de.htwg.se.durak.durakGameModule
 import de.htwg.se.durak.model.FieldComponent.FieldBaseImpl.{Card, Deck, Player}
 import de.htwg.se.durak.model.fileIoComponent.FileIoInterface
-import de.htwg.se.durak.util.Observable
 import play.api.libs.json.JsValue
 import de.htwg.se.durak.util.UndoManager
 
@@ -18,7 +17,6 @@ import com.typesafe.scalalogging.{LazyLogging, Logger}
 import de.htwg.se.durak.model.FieldComponent.FieldInterface
 
 import scala.collection.mutable.ArrayBuffer
-import scala.swing.{Reactions, Reactor}
 
 class Controller @Inject()(var field: FieldInterface) extends ControllerInterface with LazyLogging {
 
@@ -80,6 +78,12 @@ class Controller @Inject()(var field: FieldInterface) extends ControllerInterfac
     }
   }
 
+  def pullCard: Unit = {
+    actualPlayer.cardOnHand ++= cardOnField
+    cardOnField.clear()
+    print("Karten wurden aufgenommen!\n")
+  }
+
   // Karten des menschlichen Spielers ausgeben
   def printPlayerState(): Unit = {
     print(playerInGame(0).toString + "\n")
@@ -94,8 +98,8 @@ class Controller @Inject()(var field: FieldInterface) extends ControllerInterfac
 
   def chooseCardOnHand(): Unit = {
     print("Welche Karte moechtest du auswaehlen?\n")
-    for (i <- 0 to c.playerInGame(0).cardOnHand.length - 1) {
-      print(i + 1 + " = " + c.playerInGame(0).cardOnHand(i).name + " | ")
+    for (i <- 0 to playerInGame(0).cardOnHand.length - 1) {
+      print(i + 1 + " = " + playerInGame(0).cardOnHand(i).name + " | ")
     }
   }
 
@@ -221,11 +225,4 @@ class Controller @Inject()(var field: FieldInterface) extends ControllerInterfac
 
   def toJson: JsValue = ???
 
-  override def deafTo(seq: Nothing): Unit = ???
-
-  override def listenTo(seq: Nothing): Unit = ???
-
-  override def reactions(): Reactions = ???
-
-  override def reactions_$eq(reactions: Reactions): Unit = ???
 }
