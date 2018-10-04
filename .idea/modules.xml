@@ -2,7 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/durakGame.iml" filepath="$PROJECT_DIR$/.idea/modules/durakGame.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/durak.iml" filepath="$PROJECT_DIR$/.idea/modules/durak.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/durakgame-build.iml" filepath="$PROJECT_DIR$/.idea/modules/durakgame-build.iml" />
     </modules>
   </component>
 </project>

@@ -16,14 +16,16 @@
   <property name="show-needs-to-compile" value="false" />
   <property name="physical-layering-system-file" value="structure101-spec.xml" />
   <classpath>
-    <classpathentry kind="lib" path="target/scala-2.12/classes" module="durakGame" />
+    <classpathentry kind="lib" path="target/scala-2.12/classes" module="durak" />
   </classpath>
   <pom-root-files />
   <modules>
-    <module name="durakGame" kind="ide-project" />
+    <module name="durakgame-build" kind="ide-project" />
+    <module name="durak" kind="ide-project" />
   </modules>
   <modules-in-scope>
-    <module name="durakGame" />
+    <module name="durak" />
+    <module name="durakgame-build" />
   </modules-in-scope>
   <excludes>
     <exclude expression="*.*&amp;amp;*" active="true" />

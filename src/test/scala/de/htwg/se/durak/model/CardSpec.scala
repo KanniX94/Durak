@@ -1,5 +1,6 @@
 package de.htwg.se.durak.model
 
+import de.htwg.se.durak.model.FieldComponent.FieldBaseImpl.Card
 import org.scalatest._
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
@@ -8,7 +9,7 @@ import org.scalatest.junit.JUnitRunner
 class CardSpec extends WordSpec with Matchers {
   "A Card" when {
     "new" should {
-      val card = exactImpl.Card("7 Piek", 7, "P")
+      val card = Card("7 Piek", 7, "P")
       "have a name" in {
         card.name should be("7 Piek")
       }

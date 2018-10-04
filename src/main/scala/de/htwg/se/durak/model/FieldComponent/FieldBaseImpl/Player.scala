@@ -1,6 +1,6 @@
-package de.htwg.se.durak.model.exactImpl
+package de.htwg.se.durak.model.FieldComponent.FieldBaseImpl
 
-import de.htwg.se.durak.model.{Item, PlayerInterface}
+import de.htwg.se.durak.model.PlayerInterface
 
 import scala.collection.mutable.ArrayBuffer
 
@@ -9,8 +9,8 @@ case class Player(name: String) extends PlayerInterface {
     name
   }
 
-  cardOnHand = ArrayBuffer[Card]()
-  cardOnField = ArrayBuffer[Card]()
+  var cardOnHand = ArrayBuffer[Card]()
+  var cardOnField = ArrayBuffer[Card]()
 
   def getCardOnField(cards: ArrayBuffer[Card]): Unit = {
     cardOnField = cards
@@ -18,13 +18,13 @@ case class Player(name: String) extends PlayerInterface {
 
   def moveCardOnField(): Unit = cardOnField.clear()
 
-  def putCard(card: Card): Card = ???
+  def putCard(card: Card): Card = null
 
   def pickCard(card: Card): Card = {
     return null
   }
 
-  def dropCard(card: Card): Item = {
+  def dropCard(card: Card): Card = {
     for (i <- 0 to cardOnHand.length - 1) {
       if (cardOnHand(i).name == card.name) {
         val tmpCard = cardOnHand(i)
@@ -35,10 +35,11 @@ case class Player(name: String) extends PlayerInterface {
     return null
   }
 
-  override def beatCard(card: Card): Card = ???
+  def beatCard(card: Card): Card = {
+    null
+  }
 
-  override def pushCard(card: Card): Unit = {
+  def pushCard(card: Card): Unit = {
 
   }
 }
-
