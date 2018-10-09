@@ -5,7 +5,6 @@ import de.htwg.se.durak.model.FieldComponent.FieldInterface
 import scala.util.Try
 
 trait FileIoInterface {
-  def load: Try[Option[FieldInterface]]
+  def save(filename: String, field: FieldInterface)
 
-  def save(field: FieldInterface): Try[Unit]
-}
+  def load(filename: String, field: FieldInterface)}
