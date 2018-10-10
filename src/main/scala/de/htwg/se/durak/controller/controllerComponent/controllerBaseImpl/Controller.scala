@@ -18,7 +18,7 @@ import de.htwg.se.durak.model.FieldComponent.FieldInterface
 
 import scala.collection.mutable.ArrayBuffer
 
-class Controller @Inject()(var field: FieldInterface) extends ControllerInterface with LazyLogging {
+class Controller() extends ControllerInterface with LazyLogging {
 
   var gameStatus: GameStatus = IDLE
   private val undoManager = new UndoManager
@@ -35,7 +35,7 @@ class Controller @Inject()(var field: FieldInterface) extends ControllerInterfac
   var cardsLeft = 0
 
   var cardOnField: ArrayBuffer[Card] = _
-  var deck = new Deck()
+  var deck = Deck.instance()
 
   def initialize(): Unit = {
     deck.init()
@@ -60,6 +60,67 @@ class Controller @Inject()(var field: FieldInterface) extends ControllerInterfac
     gameStatus = NEW
     field = field.createNewField
     publish(new FieldChanged)
+  }
+
+
+  def doAction(field: FieldInterface, key: String): Unit = {
+    doOtherActions(field, key)
+
+    if (!field.win && !field.lose) {
+      doGameAction(field, key)
+    }
+  }
+
+  def doOtherActions(field: FieldInterface, key: String): Unit = {
+    key match {
+      case "speichern" => {
+        fileIo.save("save.durak", field)
+        gameStatus = SAVED
+      }
+      case "laden" => {
+        fileIo.load("save.durak", field)
+        gameStatus = LOADED
+      }
+      case "undo" => {
+        fileIo.load("undo.durak", field)
+        gameStatus = UNDO
+      }
+      case "beenden" =>
+        sys.exit()
+      case _ => {
+        fileIo.save("undo.durak", field)
+        gameStatus = REDO
+      }
+    }
+  }
+
+  def doGameAction(field: FieldInterface, key: String): Unit = {
+    key match {
+      case "links" => field.left()
+      case "rechts" => field.right()
+      case "schieben" => {
+        field.push()
+        gameStatus = PUSH
+      }
+      case "schlagen" => {
+        field.beat()
+        gameStatus = BEAT
+      }
+      case "schlucken" => {
+        field.pull()
+        gameStatus = PULL
+      }
+      case "non" => {
+        field.non()
+        gameStatus = NON
+      }
+      case "angreifen" => {
+        field.attack()
+        gameStatus = ATTACK
+      }
+      case _ =>
+
+    }
   }
 
   // Aktueller Spieler wird ausgewaehlt, damit dieser schlagen, schieben, etc. kann
@@ -171,54 +232,6 @@ class Controller @Inject()(var field: FieldInterface) extends ControllerInterfac
         print(card.name + "\n")
       print("\n")
     }
-  }
-
-  def undo: Unit = {
-    undoManager.undoStep
-    gameStatus = UNDO
-    publish(new FieldChanged)
-  }
-
-  def redo: Unit = {
-    undoManager.redoStep
-    gameStatus = REDO
-    publish(new FieldChanged)
-  }
-
-  def save: Unit = {
-    fileIo.save(field) match {
-      case Success(_) =>
-        gameStatus = SAVED
-      case Failure(e) =>
-        logger.error(
-          "Beim Speichern ist ein Fehler aufgetreten: " + e.getMessage)
-        gameStatus = COULD_NOT_SAVE
-    }
-
-    publish(new FieldChanged)
-  }
-
-  def load: Unit = {
-    val gridOptionResult = fileIo.load
-
-    gridOptionResult match {
-      case Success(fieldOption) =>
-        fieldOption match {
-          case Some(_field) =>
-            field = _field
-            gameStatus = LOADED
-          case None =>
-            createEmptyField
-            gameStatus = COULD_NOT_LOAD
-        }
-      case Failure(e) =>
-        logger.error(
-          "Beim Laden ist ein Fehler aufgetreten: " + e.getMessage)
-        createEmptyField
-        gameStatus = COULD_NOT_LOAD
-    }
-
-    publish(new FieldChanged)
   }
 
   def fieldToString: String = field.toString

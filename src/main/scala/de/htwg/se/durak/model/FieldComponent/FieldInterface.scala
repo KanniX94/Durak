@@ -15,15 +15,24 @@ trait FieldInterface {
   var actualPlayer: PlayerInterface
   var playerInGame: Array[PlayerInterface]
 
+  var win: Boolean
+  var lose: Boolean
+
   def createNewGame
 
-  def left(x: Integer)
+  def left()
 
-  def right(x: Integer)
+  def right()
 
-  def up(y: Integer)
+  def push()
 
-  def down(y: Integer)
+  def beat()
+
+  def pull()
+
+  def attack()
+
+  def non()
 
   def toXml: Elem
 
