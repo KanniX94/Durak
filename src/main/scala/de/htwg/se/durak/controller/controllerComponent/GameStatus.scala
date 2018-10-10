@@ -3,7 +3,7 @@ package de.htwg.se.durak.controller.controllerComponent
 object GameStatus extends Enumeration {
   type GameStatus = Value
   val IDLE, NEW, UNDO, REDO, LOADED, COULD_NOT_LOAD, SAVED,
-  COULD_NOT_SAVE, DIFFICULTY, PLAYER, ATTACK, PUSH, PULL, BEAT = Value
+  COULD_NOT_SAVE, DIFFICULTY, PLAYER, ATTACK, PUSH, PULL, NON, BEAT = Value
 
   val map = Map[GameStatus, String](
     IDLE -> "",
@@ -18,7 +18,8 @@ object GameStatus extends Enumeration {
     PUSH -> "Karten werden weiter geschoben",
     PULL -> "Karten werden aufgenommen",
     DIFFICULTY -> "Schwierigkeitsgrad wurde festgelegt",
-    PLAYER -> "Spieleranzahl wurde festgelegt"
+    PLAYER -> "Spieleranzahl wurde festgelegt",
+    NON -> "Du moechtest keine weitere Karte hinzulegen"
   )
 
   def message(gameStatus: GameStatus): Unit = {

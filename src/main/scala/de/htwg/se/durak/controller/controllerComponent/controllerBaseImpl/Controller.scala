@@ -9,7 +9,6 @@ import de.htwg.se.durak.controller.controllerComponent.GameStatus._
 import de.htwg.se.durak.durakGameModule
 import de.htwg.se.durak.model.FieldComponent.FieldBaseImpl.{Card, Deck, Player}
 import de.htwg.se.durak.model.fileIoComponent.FileIoInterface
-import de.htwg.se.durak.util.Observable
 import play.api.libs.json.JsValue
 import de.htwg.se.durak.util.UndoManager
 
@@ -18,9 +17,8 @@ import com.typesafe.scalalogging.{LazyLogging, Logger}
 import de.htwg.se.durak.model.FieldComponent.FieldInterface
 
 import scala.collection.mutable.ArrayBuffer
-import scala.swing.{Reactions, Reactor}
 
-class Controller @Inject()(var field: FieldInterface) extends ControllerInterface with LazyLogging {
+class Controller() extends ControllerInterface with LazyLogging {
 
   var gameStatus: GameStatus = IDLE
   private val undoManager = new UndoManager
@@ -37,7 +35,7 @@ class Controller @Inject()(var field: FieldInterface) extends ControllerInterfac
   var cardsLeft = 0
 
   var cardOnField: ArrayBuffer[Card] = _
-  var deck = new Deck()
+  var deck = Deck.instance()
 
   def initialize(): Unit = {
     deck.init()
@@ -64,6 +62,67 @@ class Controller @Inject()(var field: FieldInterface) extends ControllerInterfac
     publish(new FieldChanged)
   }
 
+
+  def doAction(field: FieldInterface, key: String): Unit = {
+    doOtherActions(field, key)
+
+    if (!field.win && !field.lose) {
+      doGameAction(field, key)
+    }
+  }
+
+  def doOtherActions(field: FieldInterface, key: String): Unit = {
+    key match {
+      case "speichern" => {
+        fileIo.save("save.durak", field)
+        gameStatus = SAVED
+      }
+      case "laden" => {
+        fileIo.load("save.durak", field)
+        gameStatus = LOADED
+      }
+      case "undo" => {
+        fileIo.load("undo.durak", field)
+        gameStatus = UNDO
+      }
+      case "beenden" =>
+        sys.exit()
+      case _ => {
+        fileIo.save("undo.durak", field)
+        gameStatus = REDO
+      }
+    }
+  }
+
+  def doGameAction(field: FieldInterface, key: String): Unit = {
+    key match {
+      case "links" => field.left()
+      case "rechts" => field.right()
+      case "schieben" => {
+        field.push()
+        gameStatus = PUSH
+      }
+      case "schlagen" => {
+        field.beat()
+        gameStatus = BEAT
+      }
+      case "schlucken" => {
+        field.pull()
+        gameStatus = PULL
+      }
+      case "non" => {
+        field.non()
+        gameStatus = NON
+      }
+      case "angreifen" => {
+        field.attack()
+        gameStatus = ATTACK
+      }
+      case _ =>
+
+    }
+  }
+
   // Aktueller Spieler wird ausgewaehlt, damit dieser schlagen, schieben, etc. kann
   def setActualPlayer(): Player = {
     val r = scala.util.Random
@@ -80,6 +139,12 @@ class Controller @Inject()(var field: FieldInterface) extends ControllerInterfac
     }
   }
 
+  def pullCard: Unit = {
+    actualPlayer.cardOnHand ++= cardOnField
+    cardOnField.clear()
+    print("Karten wurden aufgenommen!\n")
+  }
+
   // Karten des menschlichen Spielers ausgeben
   def printPlayerState(): Unit = {
     print(playerInGame(0).toString + "\n")
@@ -94,8 +159,8 @@ class Controller @Inject()(var field: FieldInterface) extends ControllerInterfac
 
   def chooseCardOnHand(): Unit = {
     print("Welche Karte moechtest du auswaehlen?\n")
-    for (i <- 0 to c.playerInGame(0).cardOnHand.length - 1) {
-      print(i + 1 + " = " + c.playerInGame(0).cardOnHand(i).name + " | ")
+    for (i <- 0 to playerInGame(0).cardOnHand.length - 1) {
+      print(i + 1 + " = " + playerInGame(0).cardOnHand(i).name + " | ")
     }
   }
 
@@ -169,63 +234,8 @@ class Controller @Inject()(var field: FieldInterface) extends ControllerInterfac
     }
   }
 
-  def undo: Unit = {
-    undoManager.undoStep
-    gameStatus = UNDO
-    publish(new FieldChanged)
-  }
-
-  def redo: Unit = {
-    undoManager.redoStep
-    gameStatus = REDO
-    publish(new FieldChanged)
-  }
-
-  def save: Unit = {
-    fileIo.save(field) match {
-      case Success(_) =>
-        gameStatus = SAVED
-      case Failure(e) =>
-        logger.error(
-          "Beim Speichern ist ein Fehler aufgetreten: " + e.getMessage)
-        gameStatus = COULD_NOT_SAVE
-    }
-
-    publish(new FieldChanged)
-  }
-
-  def load: Unit = {
-    val gridOptionResult = fileIo.load
-
-    gridOptionResult match {
-      case Success(fieldOption) =>
-        fieldOption match {
-          case Some(_field) =>
-            field = _field
-            gameStatus = LOADED
-          case None =>
-            createEmptyField
-            gameStatus = COULD_NOT_LOAD
-        }
-      case Failure(e) =>
-        logger.error(
-          "Beim Laden ist ein Fehler aufgetreten: " + e.getMessage)
-        createEmptyField
-        gameStatus = COULD_NOT_LOAD
-    }
-
-    publish(new FieldChanged)
-  }
-
   def fieldToString: String = field.toString
 
   def toJson: JsValue = ???
 
-  override def deafTo(seq: Nothing): Unit = ???
-
-  override def listenTo(seq: Nothing): Unit = ???
-
-  override def reactions(): Reactions = ???
-
-  override def reactions_$eq(reactions: Reactions): Unit = ???
 }
