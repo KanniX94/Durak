@@ -1,14 +1,19 @@
 package de.htwg.se.durak.model.FieldComponent
 
-import de.htwg.se.durak.model.FieldComponent.FieldBaseImpl.Field
-import scala.xml.{Elem, Node}
+import de.htwg.se.durak.model.FieldComponent.FieldBaseImpl.{Card}
+import de.htwg.se.durak.model.PlayerInterface
 
+import scala.xml.{Elem, Node}
 import scala.collection.mutable.ArrayBuffer
 
 trait FieldInterface {
-  var players: ArrayBuffer[PlayerInterface] = _
-  var amountOfPlayer: Integer
-  var field: Field
+
+  var playerCardOnHand: ArrayBuffer[Card]
+  var enemyCardOnHand: ArrayBuffer[Card]
+  var deck: ArrayBuffer[Card]
+  var cardOnField: ArrayBuffer[Card]
+  var actualPlayer: PlayerInterface
+  var playerInGame: Array[PlayerInterface]
 
   def createNewGame
 
@@ -27,7 +32,4 @@ trait FieldInterface {
 
 trait DeckInterface[Card] {
   def isEmpty(): Boolean
-}
-
-trait PlayerInterface {
 }
