@@ -1,6 +1,6 @@
 package de.htwg.se.durak.controller.controllerComponent.controllerBaseImpl
 
-
+import scala.io.StdIn.readLine
 import com.google.inject.name.Names
 import com.google.inject.{Guice, Inject}
 import net.codingwell.scalaguice.InjectorExtensions._
@@ -12,24 +12,28 @@ import de.htwg.se.durak.model.fileIoComponent.FileIoInterface
 import play.api.libs.json.JsValue
 import de.htwg.se.durak.util.UndoManager
 
-import scala.util.{Failure, Success}
 import com.typesafe.scalalogging.{LazyLogging, Logger}
 import de.htwg.se.durak.model.FieldComponent.FieldInterface
 
 import scala.collection.mutable.ArrayBuffer
 
-class Controller() extends ControllerInterface with LazyLogging {
+object Controller extends ControllerInterface with LazyLogging {
 
-  var gameStatus: GameStatus = IDLE
-  private val undoManager = new UndoManager
+  //var gameStatus: GameStatus = IDLE
+  //private val undoManager = new UndoManager
+  val scanner = new java.util.Scanner(System.in)
   val injector = Guice.createInjector(new durakGameModule)
   val fileIo = injector.instance[FileIoInterface]
 
   val r = scala.util.Random
   var playerInGame: Array[Player] = _
-  var playerName: Array[String] = Array("Bernd", "CPU1")
+  var playerName: Array[String] = _
+  var beatenCard: ArrayBuffer[Card] = _
   var amountOfPlayer = 2
   var actualPlayer: Player = setActualPlayer()
+  playerInGame = new Array[Player](amountOfPlayer)
+  var trumpCard: Card = determineTrump
+  var difficulty = 0
 
   val allCards = 31
   var cardsLeft = 0
@@ -38,30 +42,28 @@ class Controller() extends ControllerInterface with LazyLogging {
   var deck = Deck.instance()
 
   def initialize(): Unit = {
+    determinePlayer()
+    setDifficulty()
     deck.init()
     cardsLeft = allCards + 1
     mixDeck(determineMixedDeck(), deck.deck.length)
-    playerInGame = new Array[Player](amountOfPlayer)
-    for (player <- 0 to playerInGame.length - 1) {
-      playerInGame(player) = Player(playerName(player))
-    }
     dealOut()
     setActualPlayer()
     printPlayerState()
   }
 
-  def createEmptyField: Unit = {
-    injector.instance[FieldInterface](Names.named("Feld"))
-    publish(new FieldChanged)
+  def determinePlayer(): Unit = {
+    print("Spieler benennen..\n")
+    var line = scanner.nextLine()
+    for (amount <- 0 to amountOfPlayer - 1) {
+      print("Wie soll der " + amount + 1 + ". Spieler heissen?")
+      line = scanner.nextLine()
+      playerName(amount) = line
+    }
+    for (player <- 0 to playerInGame.length - 1) {
+      playerInGame(player) = Player(playerName(player))
+    }
   }
-
-  def createNewField: Unit = {
-    injector.instance[FieldInterface](Names.named("Feld"))
-    gameStatus = NEW
-    field = field.createNewField
-    publish(new FieldChanged)
-  }
-
 
   def doAction(field: FieldInterface, key: String): Unit = {
     doOtherActions(field, key)
@@ -75,21 +77,17 @@ class Controller() extends ControllerInterface with LazyLogging {
     key match {
       case "speichern" => {
         fileIo.save("save.durak", field)
-        gameStatus = SAVED
       }
       case "laden" => {
         fileIo.load("save.durak", field)
-        gameStatus = LOADED
       }
       case "undo" => {
         fileIo.load("undo.durak", field)
-        gameStatus = UNDO
       }
       case "beenden" =>
         sys.exit()
       case _ => {
         fileIo.save("undo.durak", field)
-        gameStatus = REDO
       }
     }
   }
@@ -100,26 +98,20 @@ class Controller() extends ControllerInterface with LazyLogging {
       case "rechts" => field.right()
       case "schieben" => {
         field.push()
-        gameStatus = PUSH
       }
       case "schlagen" => {
         field.beat()
-        gameStatus = BEAT
       }
       case "schlucken" => {
         field.pull()
-        gameStatus = PULL
       }
       case "non" => {
         field.non()
-        gameStatus = NON
       }
       case "angreifen" => {
         field.attack()
-        gameStatus = ATTACK
       }
       case _ =>
-
     }
   }
 
@@ -127,16 +119,6 @@ class Controller() extends ControllerInterface with LazyLogging {
   def setActualPlayer(): Player = {
     val r = scala.util.Random
     playerInGame(r.nextInt(playerInGame.length))
-  }
-
-  // Karten an alle Spieler ausgeben (vor jeder Runde)
-  def dealOut(): Unit = {
-    for (i <- playerInGame) {
-      while (!deck.isEmpty() && deck.deck.length % 16 != 0) {
-        i.cardOnHand.append(deck.dealOut())
-        cardsLeft -= 1
-      }
-    }
   }
 
   def pullCard: Unit = {
@@ -151,10 +133,6 @@ class Controller() extends ControllerInterface with LazyLogging {
     for (card <- playerInGame(0).cardOnHand) {
       print(card.name + "\n")
     }
-  }
-
-  def attack(card: Card): Unit = {
-    cardOnField.append(card)
   }
 
   def chooseCardOnHand(): Unit = {
@@ -188,18 +166,109 @@ class Controller() extends ControllerInterface with LazyLogging {
     }
   }
 
+  def toJson: JsValue = ???
+
+  // Karten an alle Spieler ausgeben (vor jeder Runde)
+  def dealOut(): Unit = {
+    for (i <- playerInGame) {
+      while (i.cardOnHand.length < 6 && !deck.isEmpty()) {
+        i.cardOnHand.append(deck.dealOut())
+        cardsLeft -= 1
+      }
+    }
+  }
+
+  // Ausgewaehlte Karte wird geschlagen und temporaer gespeichert werden
+  def beatCard(attackCard: Int, beatCard: Int): Unit = {
+    if (attackCard <= cardOnField.length - 1) {
+      if (canBeatCard(cardOnField(attackCard), actualPlayer.cardOnHand(beatCard))) {
+        beatenCard.append(cardOnField(attackCard))
+        beatenCard.append(actualPlayer.cardOnHand(beatCard))
+        cardOnField.remove(cardOnField.indexOf(cardOnField(attackCard)))
+      }
+    }
+  }
+
+  // Schwierigkeitsgrad fuer den Computergegner
+  def setDifficulty(): Unit = {
+    print("Wie agressiv sollen die Gegner sein? (1 - 3)\n")
+    var line = scanner.nextLine()
+    while (line.toInt < 1 || line.toInt > 3) {
+      line = scanner.nextLine()
+    }
+    difficulty = line.toInt
+  }
+
+  def attack(card: Card): Unit = {
+    cardOnField.append(card)
+  }
+
+  // Computergegner soll je nach schwierigkeitsgrad angreifen
+  def cpuAttacks(): Unit = {
+    val r = scala.util.Random
+    val attackChance = r.nextInt(3) + 1
+    difficulty match {
+      case 2 => {
+        for (cpuPlayer <- 1 to playerInGame.length + 1) {
+          for (i <- playerInGame(cpuPlayer).cardOnHand)
+            if (attackChance <= 2 && canLayCard(cardOnField, i)) {
+              attack(i)
+            }
+        }
+      }
+      case 3 => {
+        for (cpuPlayer <- 1 to playerInGame.length + 1) {
+          for (i <- playerInGame(cpuPlayer).cardOnHand) {
+            if (canLayCard(cardOnField, i)) {
+              attack(i)
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // Sind alle Karten auf dem Feld gleich, sodass geschoben werden kann?
+  def canPushCard(cardOnField: ArrayBuffer[Card], cardFromHand: Card): Boolean = {
+    var equalCards = cardOnField(0).value
+    for (i <- 1 to cardOnField.length - 1) {
+      if (cardOnField(i).value != equalCards) {
+        false
+      }
+      equalCards = cardOnField(i + 1).value
+    }
+    true
+  }
+
   // Kann die Karte geschlagen werden?
   def canBeatCard(cardFromField: Card, cardFromHand: Card): Boolean = {
-    if (cardFromHand.value > cardFromField.value) {
+    if ((cardFromHand.value > cardFromField.value &&
+      cardFromHand.symbol == cardFromField.symbol) ||
+      (!isTrump(cardFromField) && isTrump(cardFromHand)) ||
+      (isTrump(cardFromHand) && isTrump(cardFromField) &&
+        cardFromHand.value > cardFromField.value)) {
       true
     } else {
       false
     }
   }
 
+  // Kann ein Gegner seine Karte dazu legen?
+  def canLayCard(cardOnField: ArrayBuffer[Card], cardFromHand: Card): Boolean = {
+    for (i <- 0 to cardOnField.length - 1) {
+      if (cardOnField(i).value != cardFromHand.value) {
+        false
+      }
+    }
+    true
+  }
+
+  // Ist gelegte Karte eine Trumpfkarte?
+  def isTrump(card: Card): Boolean = if (card.symbol == trumpCard.symbol) true else false
+
   // Mische das Deck
   def mixDeck(list: List[Int], count: Int): Unit = {
-    for (i <- 0 until count - 1) {
+    for (i <- 0 to count - 1) {
       for (j <- list) {
         val tmpCard = deck.deck(i)
         deck.deck(i) = deck.deck(j)
@@ -209,6 +278,14 @@ class Controller() extends ControllerInterface with LazyLogging {
   }
 
   def determineMixedDeck(): List[Int] = r.shuffle(0.to(allCards).toList)
+
+  // Ermittle zufaelligen Trumpf
+  def determineTrump(): Card = {
+    val r = scala.util.Random
+    val tmp = r.nextInt(deck.deck.length - 1)
+    deck.deck(tmp)
+  }
+
 
   // ONLY FOR CHEATING!
 
@@ -233,9 +310,4 @@ class Controller() extends ControllerInterface with LazyLogging {
       print("\n")
     }
   }
-
-  def fieldToString: String = field.toString
-
-  def toJson: JsValue = ???
-
 }
