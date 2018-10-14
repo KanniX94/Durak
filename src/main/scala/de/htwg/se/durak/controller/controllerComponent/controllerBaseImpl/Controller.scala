@@ -197,7 +197,6 @@ object Controller extends ControllerInterface with LazyLogging {
           else {
             pullCard()
             canBeat = false
-            changeActualPlayer(actualPlayer)
             break()
           }
         }
@@ -346,23 +345,30 @@ object Controller extends ControllerInterface with LazyLogging {
 
   // Computergegner soll je nach schwierigkeitsgrad angreifen
   def cpuAttacks(): Unit = {
+    if (cardOnField.isEmpty) {
+      var lowestCard: Card = Card("Joker", allCards, "j")
+      for (card <- playerInGame(1).cardOnHand) {
+        if (card.value < lowestCard.value) {
+          lowestCard = card
+        }
+      }
+      cardOnField.append(lowestCard)
+    }
     val r = scala.util.Random
     val attackChance = r.nextInt(3) + 1
     difficulty match {
-      case 2 => {
-        for (i <- playerInGame(1).cardOnHand)
-          for (cardFromField <- cardOnField) {
-            if (attackChance <= 2 && i.value == cardFromField.value) {
-              cardOnField.append(i)
-            }
-          }
-      }
-      case 3 => {
+      case 2 => for (cardFromField <- cardOnField) {
         for (i <- playerInGame(1).cardOnHand) {
-          for (cardFromField <- cardOnField) {
-            if (i.value == cardFromField.value) {
-              cardOnField.append(i)
-            }
+          if (attackChance <= 2 && i.value == cardFromField.value) {
+            cardOnField.append(i)
+          }
+        }
+
+      }
+      case 3 => for (cardFromField <- cardOnField) {
+        for (i <- playerInGame(1).cardOnHand) {
+          if (i.value == cardFromField.value) {
+            cardOnField.append(i)
           }
         }
       }
