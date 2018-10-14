@@ -35,6 +35,7 @@ object Controller extends ControllerInterface with LazyLogging {
   playerInGame = new Array[Player](amountOfPlayer)
   var trumpCard: Card = determineTrump
   var difficulty = 0
+  var canBeat = true
 
   val allCards = 31
   var cardsLeft = 0
@@ -42,6 +43,7 @@ object Controller extends ControllerInterface with LazyLogging {
   var cardOnField: ArrayBuffer[Card] = _
   var deck = Deck.instance()
   var line = scanner.nextLine()
+  var line2 = scanner.nextLine()
 
   def initialize(): Unit = {
     determinePlayer()
@@ -95,22 +97,155 @@ object Controller extends ControllerInterface with LazyLogging {
   }
 
   def gameLoop(): Unit = {
-    if (actualPlayer == playerInGame(0)) {
+    while (true) {
+      dealOut()
       print(actualPlayer.name + " ist an der Reihe!\n")
-      chooseCardOnHand()
-      layFurtherCard()
-      printCardOnField()
-      changeActualPlayer(actualPlayer)
-      // Ab hier ist Spieler 2 an der Reihe
-      cpuBeat()
-      layFurtherCard()
+      if (actualPlayer == playerInGame(0)) {
+        printPlayerCards()
+        chooseCardOnHand()
+        layFurtherCard()
+        printCardOnField()
+        canBeat = true
+        while (canBeat) {
+          cpuBeat()
+          layFurtherCardOnBeatenCards()
+        }
+      } else {
+        canBeat = true
+        while (canBeat) {
+          cpuAttacks()
+          printCardOnField()
+          defend()
+        }
+      }
+    }
+  }
 
+  def cantBeat(): Unit = {
+    for (cardFromField <- cardOnField) {
+      for (cardFromHand <- playerInGame(0).cardOnHand) {
+        if (canBeatCard(cardFromField, cardFromHand)) {
+        } else {
+          canBeat = false
+          pullCard()
+          return
+        }
+      }
+    }
+  }
+
+  def defend(): Unit = {
+    cantBeat()
+    while (cardOnField.length > 0) {
+
+      print("Welche Karte moechtest du schlagen? (Aufnehmen = pull)\n")
+      for (cardFromField <- 0 to cardOnField.length - 1) {
+        print(cardFromField + 1 + " = " + cardOnField(cardFromField).name + " | ")
+      }
+      print("\n")
+      line = scanner.nextLine()
+      while (line.toInt < 1 || line.toInt > cardOnField.length - 1) {
+        print("Diese Karte steht nicht zur Auswahl!\nProbiere es noch einmal..")
+        line = scanner.nextLine()
+      }
+      if (line == "pull") {
+        pullCard()
+        canBeat = false
+        break()
+      }
+      print("Mit welcher Karte moechtest du schlagen?\n")
+      for (cardFromHand <- 0 to playerInGame(0).cardOnHand.length - 1) {
+        print(cardFromHand + 1 + " = " + playerInGame(0).cardOnHand(cardFromHand).name + " | ")
+      }
+      print("\n")
+      line2 = scanner.nextLine()
+      while (line2.toInt < 1 || line2.toInt > actualPlayer.cardOnHand.length - 1) {
+        print("Du hast diese Karte nicht auf der Hand!\nProbiere es noch einmal..")
+        line2 = scanner.nextLine()
+      }
+      if (canBeatCard(cardOnField(line.toInt - 1), playerInGame(0).cardOnHand(line2.toInt - 1))) {
+        beatenCard += cardOnField(line.toInt - 1)
+        beatenCard += playerInGame(0).cardOnHand(line2.toInt - 1)
+        cardOnField -= cardOnField(line.toInt - 1)
+        playerInGame(0).cardOnHand -= playerInGame(0).cardOnHand(line2.toInt - 1)
+      } else {
+        print("Du kannst " + cardOnField(line.toInt - 1).name + " nicht mit "
+          + playerInGame(0).cardOnHand(line2.toInt - 1).name + " schlagen!")
+      }
+    }
+  }
+
+  def layFurtherCardOnBeatenCards(): Unit = {
+    if (playerInGame(1).cardOnHand.size > cardOnField.size) {
+      for (beatenCard <- beatenCard) {
+        layIt(beatenCard)
+      }
+    }
+  }
+
+  // Computergegner soll angreifen/abwehren
+  def cpuBeat(): Unit = {
+    breakable {
+      for (cardFromField <- cardOnField) {
+        for (cardFromHand <- actualPlayer.cardOnHand) {
+          if (canBeatCard(cardFromField, cardFromHand)) {
+            beatenCard.append(cardFromHand)
+            beatenCard.append(cardFromField)
+            cardOnField -= cardFromField
+            actualPlayer.cardOnHand -= cardFromHand
+          }
+          else {
+            pullCard()
+            canBeat = false
+            changeActualPlayer(actualPlayer)
+            break()
+          }
+        }
+      }
+      print(actualPlayer.name + " konnte alle Karten schlagen.\n")
+      changeActualPlayer(actualPlayer)
+    }
+  }
+
+  def layFurtherCard(): Unit = {
+    if (playerInGame(1).cardOnHand.size > cardOnField.size) {
+      for (cardFromField <- cardOnField) {
+        layIt(cardFromField)
+      }
+    }
+  }
+
+  def layIt(otherCard: Card): Unit = {
+    for (card <- actualPlayer.cardOnHand) {
+      breakable {
+        if (otherCard.value == card.value) {
+          print("Du hast die Karte " + card.name + " auf der Hand.\n")
+          print("Moechtest du sie dazu legen? (j/n)\n")
+          line = scanner.nextLine()
+          line match {
+            case "ja" | "j" =>
+              cardOnField += card
+              actualPlayer.cardOnHand -= card
+            case "nein" | "n" =>
+              //canBeat = false
+              break()
+            case _ =>
+          }
+        }
+      }
     }
   }
 
   def printCardOnField(): Unit = {
     print("\nAuf dem Spielefeld liegen nun folgende Karten:\n")
     for (card <- cardOnField) {
+      print(card.name + " | ")
+    }
+  }
+
+  def printBeatenCards(): Unit = {
+    print("\nAuf dem Spielefeld liegen nun folgende Karten:\n")
+    for (card <- beatenCard) {
       print(card.name + " | ")
     }
   }
@@ -122,26 +257,6 @@ object Controller extends ControllerInterface with LazyLogging {
       actualPlayer = playerInGame(0)
     }
   }
-
-  def layFurtherCard(): Unit = {
-    for (cardFromField <- cardOnField) {
-      for (card <- actualPlayer.cardOnHand) {
-        breakable {
-          if (cardFromField.value == card.value) {
-            print("Du hast die Karte " + card.name + " auf der Hand.\n")
-            print("Moechtest du sie dazu legen? (j/n)\n")
-            line = scanner.nextLine()
-            line match {
-              case "ja" | "j" => cardOnField += card
-              case "nein" | "n" => break()
-              case _ =>
-            }
-          }
-        }
-      }
-    }
-  }
-
 
   def doGameAction(field: FieldInterface, key: String): Unit = {
     key match {
@@ -177,12 +292,13 @@ object Controller extends ControllerInterface with LazyLogging {
     actualPlayer.cardOnHand ++= beatenCard
     cardOnField.clear()
     beatenCard.clear()
-    print(actualPlayer.name + " musste alle Karten aufnehmen!\n")
+    print(actualPlayer.name + " muss alle Karten aufnehmen!\n")
   }
 
   // Karten des menschlichen Spielers ausgeben
   def printPlayerCards(): Unit = {
     print(playerInGame(0).toString + "\n")
+    print("Du hast folgende Karten auf der Hand:\n")
     for (card <- playerInGame(0).cardOnHand) {
       print(card.name + "\n")
     }
@@ -190,8 +306,8 @@ object Controller extends ControllerInterface with LazyLogging {
 
   def chooseCardOnHand(): Unit = {
     print("Welche Karte moechtest du legen?\n")
-    for (i <- 0 to playerInGame(0).cardOnHand.length - 1) {
-      print(i + 1 + " = " + playerInGame(0).cardOnHand(i).name + " | ")
+    for (i <- 0 to actualPlayer.cardOnHand.length - 1) {
+      print(i + 1 + " = " + actualPlayer.cardOnHand(i).name + " | ")
     }
     print("\n")
     line = scanner.nextLine()
@@ -199,29 +315,8 @@ object Controller extends ControllerInterface with LazyLogging {
       print("Du hast diese Karte nicht auf der Hand!\nProbiere es noch einmal..")
       line = scanner.nextLine()
     }
-    cardOnField += actualPlayer.cardOnHand(line.toInt)
-  }
-
-  // Computergegner soll angreifen/abwehren
-  def cpuBeat(): Unit = {
-    breakable {
-      for (cardFromField <- cardOnField) {
-        for (cardFromHand <- playerInGame(1).cardOnHand) {
-          if (canBeatCard(cardFromField, cardFromHand)) {
-            beatenCard.append(cardFromHand)
-            beatenCard.append(cardFromField)
-            cardOnField -= cardFromField
-            actualPlayer.cardOnHand -= cardFromHand
-          }
-          else {
-            pullCard()
-            changeActualPlayer(actualPlayer)
-            break()
-          }
-        }
-        print(playerInGame(1).name + " konnte alle Karten schlagen.\n")
-      }
-    }
+    cardOnField += actualPlayer.cardOnHand(line.toInt - 1)
+    actualPlayer.cardOnHand.remove(line.toInt - 1)
   }
 
   def toJson: JsValue = ???
@@ -233,16 +328,8 @@ object Controller extends ControllerInterface with LazyLogging {
         i.cardOnHand.append(deck.dealOut())
         cardsLeft -= 1
       }
-    }
-  }
-
-  // Ausgewaehlte Karte wird geschlagen und temporaer gespeichert werden
-  def beatCard(attackCard: Int, beatCard: Int): Unit = {
-    if (attackCard <= cardOnField.length - 1) {
-      if (canBeatCard(cardOnField(attackCard), actualPlayer.cardOnHand(beatCard))) {
-        beatenCard.append(cardOnField(attackCard))
-        beatenCard.append(actualPlayer.cardOnHand(beatCard))
-        cardOnField.remove(cardOnField.indexOf(cardOnField(attackCard)))
+      if (deck.isEmpty()) {
+        print("Das Deck ist leer!\n")
       }
     }
   }
@@ -257,28 +344,24 @@ object Controller extends ControllerInterface with LazyLogging {
     difficulty = line.toInt
   }
 
-  def attack(card: Card): Unit = {
-    cardOnField.append(card)
-  }
-
   // Computergegner soll je nach schwierigkeitsgrad angreifen
   def cpuAttacks(): Unit = {
     val r = scala.util.Random
     val attackChance = r.nextInt(3) + 1
     difficulty match {
       case 2 => {
-        for (cpuPlayer <- 1 to playerInGame.length + 1) {
-          for (i <- playerInGame(cpuPlayer).cardOnHand)
-            if (attackChance <= 2 && canLayCard(cardOnField, i)) {
-              attack(i)
+        for (i <- playerInGame(1).cardOnHand)
+          for (cardFromField <- cardOnField) {
+            if (attackChance <= 2 && i.value == cardFromField.value) {
+              cardOnField.append(i)
             }
-        }
+          }
       }
       case 3 => {
-        for (cpuPlayer <- 1 to playerInGame.length + 1) {
-          for (i <- playerInGame(cpuPlayer).cardOnHand) {
-            if (canLayCard(cardOnField, i)) {
-              attack(i)
+        for (i <- playerInGame(1).cardOnHand) {
+          for (cardFromField <- cardOnField) {
+            if (i.value == cardFromField.value) {
+              cardOnField.append(i)
             }
           }
         }
@@ -287,16 +370,16 @@ object Controller extends ControllerInterface with LazyLogging {
   }
 
   // Sind alle Karten auf dem Feld gleich, sodass geschoben werden kann?
-  def canPushCard(cardOnField: ArrayBuffer[Card], cardFromHand: Card): Boolean = {
+  /*def canPushCard(cardOnField: ArrayBuffer[Card], cardFromHand: Card): Boolean = {
     var equalCards = cardOnField(0).value
-    for (i <- 1 to cardOnField.length - 1) {
-      if (cardOnField(i).value != equalCards) {
+    for (i <- cardOnField) {
+      if (i.value != equalCards) {
         false
       }
-      equalCards = cardOnField(i + 1).value
+      equalCards = i.value
     }
     true
-  }
+  }*/
 
   // Kann die Karte geschlagen werden?
   def canBeatCard(cardFromField: Card, cardFromHand: Card): Boolean = {
@@ -309,16 +392,6 @@ object Controller extends ControllerInterface with LazyLogging {
     } else {
       false
     }
-  }
-
-  // Kann ein Gegner seine Karte dazu legen?
-  def canLayCard(cardOnField: ArrayBuffer[Card], cardFromHand: Card): Boolean = {
-    for (i <- 0 to cardOnField.length - 1) {
-      if (cardOnField(i).value != cardFromHand.value) {
-        false
-      }
-    }
-    true
   }
 
   // Ist gelegte Karte eine Trumpfkarte?
@@ -344,13 +417,7 @@ object Controller extends ControllerInterface with LazyLogging {
     deck.deck(tmp)
   }
 
-
   // ONLY FOR CHEATING!
-
-  def cheat(): Unit = {
-    printEnemyHand()
-    printDeck()
-  }
 
   def printDeck(): Unit = {
     print("Im aktuellen Deck sind noch folgende Karten\n")
