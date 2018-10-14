@@ -5,71 +5,69 @@ import com.google.inject.name.Names
 import com.google.inject.{Guice, Inject}
 import net.codingwell.scalaguice.InjectorExtensions._
 import de.htwg.se.durak.controller.controllerComponent.{ControllerInterface, FieldChanged}
-import de.htwg.se.durak.controller.controllerComponent.GameStatus._
 import de.htwg.se.durak.durakGameModule
 import de.htwg.se.durak.model.FieldComponent.FieldBaseImpl.{Card, Deck, Player}
 import de.htwg.se.durak.model.fileIoComponent.FileIoInterface
 import play.api.libs.json.JsValue
 import de.htwg.se.durak.util.UndoManager
-import util.control.Breaks._
 
+import util.control.Breaks._
 import com.typesafe.scalalogging.{LazyLogging, Logger}
 import de.htwg.se.durak.model.FieldComponent.FieldInterface
+import de.htwg.se.durak.model.PlayerInterface
 
 import scala.collection.mutable.ArrayBuffer
 
-object Controller extends ControllerInterface with LazyLogging {
+class Controller extends ControllerInterface with LazyLogging {
 
-  //var gameStatus: GameStatus = IDLE
-  //private val undoManager = new UndoManager
   val scanner = new java.util.Scanner(System.in)
-  val injector = Guice.createInjector(new durakGameModule)
-  val fileIo = injector.instance[FileIoInterface]
+  //val injector = Guice.createInjector(new durakGameModule)
+  //val fileIo = injector.instance[FileIoInterface]
 
   val r = scala.util.Random
-  var playerInGame: Array[Player] = _
-  var playerName: Array[String] = _
-  var beatenCard: ArrayBuffer[Card] = _
+  var playerInGame = new Array[Player](2)
+  var beatenCard = ArrayBuffer.empty[Card]
   var amountOfPlayer = 2
-  var actualPlayer: Player = setActualPlayer()
+  var playerName = new Array[String](amountOfPlayer)
   playerInGame = new Array[Player](amountOfPlayer)
-  var trumpCard: Card = determineTrump
+  var actualPlayer: Player = _
   var difficulty = 0
   var canBeat = true
 
   val allCards = 31
   var cardsLeft = 0
 
-  var cardOnField: ArrayBuffer[Card] = _
+  var cardOnField = ArrayBuffer.empty[Card]
   var deck = Deck.instance()
+  var trumpCard: Card = determineTrump()
   var line = scanner.nextLine()
   var line2 = scanner.nextLine()
 
   def initialize(): Unit = {
     determinePlayer()
+    actualPlayer = playerInGame(0) //setActualPlayer()
     setDifficulty()
     deck.init()
     cardsLeft = allCards + 1
     mixDeck(determineMixedDeck(), deck.deck.length)
     dealOut()
     setActualPlayer()
-    printPlayerCards()
+    gameLoop()
   }
 
   def determinePlayer(): Unit = {
     print("Spieler benennen..\n")
-    var line = scanner.nextLine()
     for (amount <- 0 to amountOfPlayer - 1) {
-      print("Wie soll der " + amount + 1 + ". Spieler heissen?")
+      print("Wie soll der " + (amount + 1) + ". Spieler heissen?")
       line = scanner.nextLine()
       playerName(amount) = line
     }
     for (player <- 0 to playerInGame.length - 1) {
-      playerInGame(player) = Player(playerName(player))
+      playerInGame(player) = new Player(playerName(player))
     }
   }
 
-  def doAction(field: FieldInterface, key: String): Unit = {
+  /*def doAction(field: FieldInterface, key: String): Unit = {
     doOtherActions(field, key)
 
     if (!field.win && !field.lose) {
@@ -95,7 +93,7 @@ object Controller extends ControllerInterface with LazyLogging {
       }
     }
   }
-
+*/
   def gameLoop(): Unit = {
     while (true) {
       dealOut()
@@ -106,14 +104,18 @@ object Controller extends ControllerInterface with LazyLogging {
         layFurtherCard()
         printCardOnField()
         canBeat = true
+        changeActualPlayer(actualPlayer)
         while (canBeat) {
           cpuBeat()
+          changeActualPlayer(actualPlayer)
           layFurtherCardOnBeatenCards()
+          changeActualPlayer(actualPlayer)
         }
       } else {
         canBeat = true
         while (canBeat) {
           cpuAttacks()
+          changeActualPlayer(actualPlayer)
           printCardOnField()
           defend()
         }
@@ -208,7 +210,8 @@ object Controller extends ControllerInterface with LazyLogging {
 
   def layFurtherCard(): Unit = {
     if (playerInGame(1).cardOnHand.size > cardOnField.size) {
-      for (cardFromField <- cardOnField) {
+      val tmp = cardOnField
+      for (cardFromField <- tmp) {
         layIt(cardFromField)
       }
     }
@@ -222,14 +225,17 @@ object Controller extends ControllerInterface with LazyLogging {
           print("Moechtest du sie dazu legen? (j/n)\n")
           line = scanner.nextLine()
           line match {
-            case "ja" | "j" =>
+            case "ja" | "j" => {
               cardOnField += card
-              actualPlayer.cardOnHand -= card
+              actualPlayer.cardOnHand.remove(actualPlayer.cardOnHand.indexOf(card))
+            }
             case "nein" | "n" =>
               //canBeat = false
-              break()
+              breakable()
             case _ =>
           }
+        } else {
+          breakable()
         }
       }
     }
@@ -283,7 +289,8 @@ object Controller extends ControllerInterface with LazyLogging {
   // Aktueller Spieler wird ausgewaehlt, damit dieser schlagen, schieben, etc. kann
   def setActualPlayer(): Player = {
     val r = scala.util.Random
-    playerInGame(r.nextInt(playerInGame.length))
+    val player = r.nextInt(playerInGame.length)
+    playerInGame(player)
   }
 
   def pullCard(): Unit = {
@@ -374,18 +381,6 @@ object Controller extends ControllerInterface with LazyLogging {
       }
     }
   }
-
-  // Sind alle Karten auf dem Feld gleich, sodass geschoben werden kann?
-  /*def canPushCard(cardOnField: ArrayBuffer[Card], cardFromHand: Card): Boolean = {
-    var equalCards = cardOnField(0).value
-    for (i <- cardOnField) {
-      if (i.value != equalCards) {
-        false
-      }
-      equalCards = i.value
-    }
-    true
-  }*/
 
   // Kann die Karte geschlagen werden?
   def canBeatCard(cardFromField: Card, cardFromHand: Card): Boolean = {
