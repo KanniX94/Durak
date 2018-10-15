@@ -189,12 +189,12 @@ class Controller extends ControllerInterface with LazyLogging {
   def cpuBeat(): Unit = {
     breakable {
       for (cardFromField <- cardOnField) {
-        for (cardFromHand <- actualPlayer.cardOnHand) {
+        for (cardFromHand <- playerInGame(1).cardOnHand) {
           if (canBeatCard(cardFromField, cardFromHand)) {
             beatenCard.append(cardFromHand)
             beatenCard.append(cardFromField)
             cardOnField -= cardFromField
-            actualPlayer.cardOnHand -= cardFromHand
+            playerInGame(1).cardOnHand -= cardFromHand
           }
           else {
             pullCard()
@@ -218,7 +218,8 @@ class Controller extends ControllerInterface with LazyLogging {
   }
 
   def layIt(otherCard: Card): Unit = {
-    for (card <- actualPlayer.cardOnHand) {
+    val tmp = playerInGame(0).cardOnHand
+    for (card <- tmp) {
       breakable {
         if (otherCard.value == card.value) {
           print("Du hast die Karte " + card.name + " auf der Hand.\n")
@@ -226,8 +227,8 @@ class Controller extends ControllerInterface with LazyLogging {
           line = scanner.nextLine()
           line match {
             case "ja" | "j" => {
-              cardOnField += card
-              actualPlayer.cardOnHand.remove(actualPlayer.cardOnHand.indexOf(card))
+              cardOnField += playerInGame(0).cardOnHand(playerInGame(0).cardOnHand.indexOf(card))
+              playerInGame(0).cardOnHand.remove(playerInGame(0).cardOnHand.indexOf(card))
             }
             case "nein" | "n" =>
               //canBeat = false
@@ -246,6 +247,7 @@ class Controller extends ControllerInterface with LazyLogging {
     for (card <- cardOnField) {
       print(card.name + " | ")
     }
+    print("\n")
   }
 
   def printBeatenCards(): Unit = {
