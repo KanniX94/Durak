@@ -251,6 +251,7 @@ class Controller extends ControllerInterface with LazyLogging {
   def layIt(otherCard: Card): Unit = {
     val tmpOtherCard = otherCard
     val tmp = playerInGame(0).cardOnHand
+
     for (card <- tmp) {
       if (tmpOtherCard.value == card.value) {
         print("Du hast die Karte " + card.name + " auf der Hand.\n")
