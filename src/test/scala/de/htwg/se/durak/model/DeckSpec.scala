@@ -8,14 +8,14 @@ import org.scalatest.junit.JUnitRunner
 @RunWith(classOf[JUnitRunner])
 class DeckSpec extends WordSpec with Matchers {
   "A deck" when {
-    var deck = Deck()
+    var deck = Deck.instance()
     "new" should {
-      "be empty" in {
-        deck.size should be(0)
+      "have 32 Cards in it" in {
+        deck.deck.length should be(32)
       }
     }
     "filled with all cards" should {
-      deck.fillDeck()
+      deck.init()
       "be have 32 cards" in {
         deck.cards.size should be(32)
       }
