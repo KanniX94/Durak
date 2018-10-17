@@ -19,7 +19,7 @@ libraryDependencies += "junit" % "junit" % "4.8" % "test"
 //libraryDependencies += "org.scala-lang.modules" %% "scala-xml" % "1.0.6"
 
 // https://mvnrepository.com/artifact/com.typesafe.play/play-json
-libraryDependencies += "com.typesafe.play" %% "play-json" % "2.7.0-M1"
+//libraryDependencies += "com.typesafe.play" %% "play-json" % "2.7.0-M1"
 
 // https://mvnrepository.com/artifact/ch.qos.logback/logback-classic
 libraryDependencies += "ch.qos.logback" % "logback-classic" % "1.2.3"

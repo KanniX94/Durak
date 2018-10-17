@@ -24,8 +24,8 @@
     <module name="durak" kind="ide-project" />
   </modules>
   <modules-in-scope>
-    <module name="durak" />
     <module name="durakgame-build" />
+    <module name="durak" />
   </modules-in-scope>
   <excludes>
     <exclude expression="*.*&amp;amp;*" active="true" />

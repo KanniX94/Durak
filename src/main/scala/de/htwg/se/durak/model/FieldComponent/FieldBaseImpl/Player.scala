@@ -10,13 +10,6 @@ case class Player(name: String) extends PlayerInterface {
   }
 
   var cardOnHand = ArrayBuffer[Card]()
-  var cardOnField = ArrayBuffer[Card]()
-
-  def getCardOnField(cards: ArrayBuffer[Card]): Unit = {
-    cardOnField = cards
-  }
-
-  def moveCardOnField(): Unit = cardOnField.clear()
 
   def putCard(card: Card): Card = null
 

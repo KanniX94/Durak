@@ -117,4 +117,27 @@ class Field extends FieldInterface {
     }
     tmpPlayer
   }
+
+  override var playerCardOnHand: ArrayBuffer[Card] = _
+  override var enemyCardOnHand: ArrayBuffer[Card] = _
+  override var deck: ArrayBuffer[Card] = _
+  override var cardOnField: ArrayBuffer[Card] = _
+  override var actualPlayer: PlayerInterface = _
+  override var playerInGame: Array[PlayerInterface] = _
+  override var win: Boolean = _
+  override var lose: Boolean = _
+
+  override def left(): Unit = ???
+
+  override def right(): Unit = ???
+
+  override def push(): Unit = ???
+
+  override def beat(): Unit = ???
+
+  override def pull(): Unit = ???
+
+  override def attack(): Unit = ???
+
+  override def non(): Unit = ???
 }

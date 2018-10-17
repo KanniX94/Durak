@@ -18,7 +18,7 @@ class PlayerSpec extends WordSpec with Matchers {
       }
     }
     "push all cards on field" when {
-      var deck = Deck()
+      var deck = Deck.instance()
       val cardOnField: ArrayBuffer[Card] = ArrayBuffer(Card("7 Herz", 7, "H"), Card("7 Piek", 7, "P"))
       "the cards have the same value" in {
         val cardOnHand = FieldBaseImpl.Card("7 Kreuz", 7, "K")

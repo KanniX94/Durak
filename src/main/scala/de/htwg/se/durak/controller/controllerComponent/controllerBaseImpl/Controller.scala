@@ -14,7 +14,6 @@ import de.htwg.se.durak.util.UndoManager
 import util.control.Breaks._
 import com.typesafe.scalalogging.{LazyLogging, Logger}
 import de.htwg.se.durak.model.FieldComponent.FieldInterface
-import de.htwg.se.durak.model.PlayerInterface
 
 import scala.collection.mutable.ArrayBuffer
 
