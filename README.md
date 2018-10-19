@@ -1,3 +1,5 @@
+[![Coverage Status](https://coveralls.io/repos/github/odsource/Durak/badge.svg?branch=master)](https://coveralls.io/github/odsource/Durak?branch=master)
+
 # Htwg Scala Seed Project 
 =====================================================
 ## the easiest way to start a project for the lecture SE
