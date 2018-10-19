@@ -12,7 +12,7 @@ class Field extends FieldInterface {
   deck = ArrayBuffer[Card]()
   cardOnField = ArrayBuffer[Card]()
   playerInGame = Array[PlayerInterface]()
-  actualPlayer
+  actualPlayer = Player("Sample Text")
 
   def createNewGame: Unit = {
     playerCardOnHand = ArrayBuffer[Card]()

@@ -53,6 +53,7 @@ class Deck private() extends DeckInterface[Card] {
 
   // Erstelle ein leeres Deck
   var deck = new ArrayBuffer[Card]()
+  init()
 
   def init(): Unit = {
     fillDeck()
