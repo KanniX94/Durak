@@ -43,3 +43,7 @@ libraryDependencies += "org.scala-lang.modules" % "scala-xml_2.12" % "1.0.6"
 libraryDependencies += "com.typesafe.play" %% "play-json" % "2.6.6"
 libraryDependencies += "com.typesafe.scala-logging" %% "scala-logging" % "3.7.2"
 libraryDependencies += "com.google.code.gson" % "gson" % "2.8.5"
+
+addSbtPlugin("org.scoverage" % "sbt-scoverage" % "1.5.1")
+
+addSbtPlugin("org.scoverage" % "sbt-coveralls" % "1.2.5")
