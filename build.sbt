@@ -32,7 +32,9 @@ libraryDependencies += "ch.qos.logback" % "logback-classic" % "1.2.3"
 //Libraries that we will use in later lectures compatible with this scala version
 // uncomment to use!!
 
-libraryDependencies += "org.scala-lang.modules" % "scala-swing_2.12" % "2.0.1"
+// https://mvnrepository.com/artifact/org.scala-lang/scala-swing
+libraryDependencies += "org.scala-lang" % "scala-swing" % "2.11.0-M7"
+
 
 libraryDependencies += "com.google.inject" % "guice" % "4.1.0"
 
