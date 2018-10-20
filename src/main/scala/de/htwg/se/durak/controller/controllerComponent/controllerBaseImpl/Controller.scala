@@ -13,6 +13,7 @@ import de.htwg.se.durak.util.UndoManager
 
 import scala.util.control.Breaks._
 import com.typesafe.scalalogging.{LazyLogging, Logger}
+import de.htwg.se.durak.aview.gui.Gui
 import de.htwg.se.durak.model.FieldComponent.FieldInterface
 
 import scala.collection.mutable.ArrayBuffer
@@ -38,18 +39,20 @@ class Controller extends ControllerInterface with LazyLogging {
 
   val allCards = 31
   var cardsLeft = 0
+  val gui = new Gui()
 
   var cardOnField = ArrayBuffer.empty[Card]
   var deck = Deck.instance()
-  var trumpCard: Card = determineTrump()
-  var line = scanner.nextLine()
-  var line2 = scanner.nextLine()
+  var trumpCard: Card = new Card("Start", 0, "")
+  var line = ""
+  var line2 = ""
 
   def initialize(): Unit = {
     determinePlayer()
     actualPlayer = playerInGame(0) //setActualPlayer()
     setDifficulty()
     deck.init()
+    trumpCard = determineTrump()
     cardsLeft = allCards + 1
     mixDeck(determineMixedDeck(), deck.deck.length)
     dealOut()
@@ -99,9 +102,11 @@ class Controller extends ControllerInterface with LazyLogging {
   def gameLoop(): Unit = {
     print(trumpCard.name.split(" ").last + " ist Trumpf\n")
     while (true) {
+
       cardOnField.clear()
       beatenCard.clear()
       dealOut()
+      gui.displayHand(playerInGame(0).cardOnHand, playerInGame(1).cardOnHand)
       print(actualPlayer.name + " ist an der Reihe!\n")
       printPlayerCards()
       if (actualPlayer == playerInGame(0)) {
