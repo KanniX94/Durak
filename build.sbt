@@ -37,7 +37,7 @@ libraryDependencies += "org.scala-lang.modules" % "scala-swing_2.12" % "2.0.1"
 libraryDependencies += "com.google.inject" % "guice" % "4.1.0"
 
 // https://mvnrepository.com/artifact/net.codingwell/scala-guice
-libraryDependencies += "net.codingwell" %% "scala-guice" % "4.0.1"
+libraryDependencies += "net.codingwell" %% "scala-guice" % "4.1.0"
 
 
 libraryDependencies += "org.scala-lang.modules" % "scala-xml_2.12" % "1.0.6"
