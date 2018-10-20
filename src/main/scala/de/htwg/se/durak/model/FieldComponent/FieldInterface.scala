@@ -1,7 +1,7 @@
 package de.htwg.se.durak.model.FieldComponent
 
-import de.htwg.se.durak.model.FieldComponent.FieldBaseImpl.{Card}
-import de.htwg.se.durak.model.PlayerInterface
+import de.htwg.se.durak.model.FieldComponent.FieldBaseImpl.{Card, Player}
+import de.htwg.se.durak.model
 
 import scala.xml.{Elem, Node}
 import scala.collection.mutable.ArrayBuffer
@@ -12,25 +12,11 @@ trait FieldInterface {
   var enemyCardOnHand: ArrayBuffer[Card]
   var deck: ArrayBuffer[Card]
   var cardOnField: ArrayBuffer[Card]
-  var actualPlayer: PlayerInterface
-  var playerInGame: Array[PlayerInterface]
+  var actualPlayer: Player
+  var playerInGame: Array[Player]
 
   var win: Boolean
   var lose: Boolean
-
-  def left()
-
-  def right()
-
-  def push()
-
-  def beat()
-
-  def pull()
-
-  def attack()
-
-  def non()
 
   def toXml: Elem
 
