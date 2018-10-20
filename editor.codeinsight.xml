@@ -1,0 +1,5 @@
+<application>
+  <component name="CodeInsightSettings">
+    <EXCLUDED_PACKAGE NAME="de.htwg.se.durak.model.FieldComponent.FieldBaseImpl.Field" />
+  </component>
+</application>
