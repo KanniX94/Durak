@@ -14,13 +14,6 @@ class Field extends FieldInterface {
   playerInGame = Array[PlayerInterface]()
   actualPlayer = Player("Sample Text")
 
-  def createNewGame: Unit = {
-    playerCardOnHand = ArrayBuffer[Card]()
-    enemyCardOnHand = ArrayBuffer[Card]()
-    deck = ArrayBuffer[Card]()
-    cardOnField = ArrayBuffer[Card]()
-  }
-
   def toXml: Elem = {
     <Field>
       <playerInGame>
