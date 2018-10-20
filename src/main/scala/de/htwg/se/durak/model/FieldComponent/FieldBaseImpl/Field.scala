@@ -6,55 +6,42 @@ import de.htwg.se.durak.model.PlayerInterface
 import scala.collection.mutable.ArrayBuffer
 import scala.xml.{Elem, Node}
 
-class Field extends FieldInterface {
-  playerCardOnHand = ArrayBuffer[Card]()
-  enemyCardOnHand = ArrayBuffer[Card]()
-  deck = ArrayBuffer[Card]()
-  cardOnField = ArrayBuffer[Card]()
-  playerInGame = Array[PlayerInterface]()
-  actualPlayer
-
-  def createNewGame: Unit = {
-    playerCardOnHand = ArrayBuffer[Card]()
-    enemyCardOnHand = ArrayBuffer[Card]()
-    deck = ArrayBuffer[Card]()
-    cardOnField = ArrayBuffer[Card]()
-  }
+class Field(pH: ArrayBuffer[Card],eH: ArrayBuffer[Card], d: ArrayBuffer[Card], cF: ArrayBuffer[Card], pG: Array[Player], pA: Player) extends FieldInterface {
 
   def toXml: Elem = {
     <Field>
       <playerInGame>
         <player>
-          {serializePlayer(this.playerInGame)}
+          {serializePlayer(pG)}
         </player>
       </playerInGame>
       <actualPlayer>
-        {this.actualPlayer}
+        {pA}
       </actualPlayer>
       <playerCardOnHand>
         <card>
-          {serializeCards(this.playerCardOnHand)}
+          {serializeCards(pH)}
         </card>
       </playerCardOnHand>
       <enemyCardOnHand>
         <card>
-          {serializeCards(this.enemyCardOnHand)}
+          {serializeCards(eH)}
         </card>
       </enemyCardOnHand>
       <deck>
         <card>
-          {serializeCards(this.deck)}
+          {serializeCards(d)}
         </card>
       </deck>
       <cardOnField>
         <card>
-          {serializeCards(this.cardOnField)}
+          {serializeCards(cF)}
         </card>
       </cardOnField>
     </Field>
   }
 
-  def serializePlayer(playerInGame: Array[PlayerInterface]): String = {
+  def serializePlayer(playerInGame: Array[Player]): String = {
     val stringBuilder = new StringBuilder
 
     for (i <- playerInGame.indices) {
@@ -91,10 +78,15 @@ class Field extends FieldInterface {
     this.cardOnField = new ArrayBuffer[Card]()
     this.cardOnField = deserializeCards((node \ "cardOnField").text)
 
-    this.playerInGame = new Array[PlayerInterface](2)
+    this.playerInGame = new Array[Player](2)
     this.playerInGame = deserializePlayer((node \ "playerInGame").text)
 
     this.actualPlayer = new Player((node \ "actualPlayer").text)
+    returnToController()
+  }
+
+  def returnToController(): Unit = {
+
   }
 
   def deserializeCards(cards: String): ArrayBuffer[Card] = {
@@ -108,36 +100,22 @@ class Field extends FieldInterface {
     tmpCards
   }
 
-  def deserializePlayer(player: String): Array[PlayerInterface] = {
+  def deserializePlayer(player: String): Array[Player] = {
     val splitPlayer = player.split(",")
 
-    val tmpPlayer = new Array[PlayerInterface](splitPlayer.length)
+    val tmpPlayer = new Array[Player](splitPlayer.length)
     for (i <- splitPlayer.indices) {
       tmpPlayer(i) = Player(tmpPlayer(i).toString)
     }
     tmpPlayer
   }
 
+  override var win: Boolean = _
+  override var lose: Boolean = _
   override var playerCardOnHand: ArrayBuffer[Card] = _
   override var enemyCardOnHand: ArrayBuffer[Card] = _
   override var deck: ArrayBuffer[Card] = _
   override var cardOnField: ArrayBuffer[Card] = _
-  override var actualPlayer: PlayerInterface = _
-  override var playerInGame: Array[PlayerInterface] = _
-  override var win: Boolean = _
-  override var lose: Boolean = _
-
-  override def left(): Unit = ???
-
-  override def right(): Unit = ???
-
-  override def push(): Unit = ???
-
-  override def beat(): Unit = ???
-
-  override def pull(): Unit = ???
-
-  override def attack(): Unit = ???
-
-  override def non(): Unit = ???
+  override var actualPlayer: Player = _
+  override var playerInGame: Array[Player] = _
 }

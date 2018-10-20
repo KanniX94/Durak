@@ -1,4 +1,4 @@
-[![Coverage Status](https://coveralls.io/repos/github/odsource/Durak/badge.svg?branch=master)](https://coveralls.io/github/odsource/Durak?branch=master)
+[![Coverage Status](https://coveralls.io/repos/github/KanniX94/Durak/badge.svg?branch=master)](https://coveralls.io/github/KanniX94/Durak?branch=master)
 
 # Htwg Scala Seed Project 
 =====================================================

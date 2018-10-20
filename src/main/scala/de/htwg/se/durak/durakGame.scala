@@ -11,6 +11,7 @@ import de.htwg.se.durak.model.FieldComponent.FieldInterface
 import play.api.libs.json.JsValue
 
 import scala.io.StdIn.readLine
+import scala.swing.{Dimension, Label, MainFrame}
 
 object durakGame {
   //val injector = Guice.createInjector(new durakGameModule)
