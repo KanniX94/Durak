@@ -18,8 +18,6 @@ trait FieldInterface {
   var win: Boolean
   var lose: Boolean
 
-  def createNewGame
-
   def left()
 
   def right()
