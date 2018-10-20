@@ -42,8 +42,8 @@ class Controller extends ControllerInterface with LazyLogging {
   var cardOnField = ArrayBuffer.empty[Card]
   var deck = Deck.instance()
   var trumpCard: Card = new Card("Joker", 0, "J")
-  var line = scanner.nextLine()
-  var line2 = scanner.nextLine()
+  var line = ""
+  var line2 = ""
 
   def initialize(): Unit = {
     determinePlayer()
@@ -301,23 +301,6 @@ class Controller extends ControllerInterface with LazyLogging {
 
   def doGameAction(field: FieldInterface, key: String): Unit = {
     key match {
-      case "links" => field.left()
-      case "rechts" => field.right()
-      case "schieben" => {
-        field.push()
-      }
-      case "schlagen" => {
-        field.beat()
-      }
-      case "schlucken" => {
-        field.pull()
-      }
-      case "non" => {
-        field.non()
-      }
-      case "angreifen" => {
-        field.attack()
-      }
       case _ =>
     }
   }
