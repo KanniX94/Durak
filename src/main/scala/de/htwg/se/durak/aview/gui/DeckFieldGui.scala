@@ -1,8 +1,7 @@
 package de.htwg.se.durak.aview.gui
 
 import java.awt.GridLayout
-
-import javax.swing.{BorderFactory, BoxLayout, JPanel}
+import javax.swing.{BorderFactory, JPanel}
 
 class DeckFieldGui extends JPanel{
   val deckPanel = new JPanel()
