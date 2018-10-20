@@ -12,6 +12,9 @@ import scala.collection.mutable.ArrayBuffer
 class PlayerSpec extends WordSpec with Matchers {
   "A Player" when {
     val player = Player("Marcel")
+    "have a toString method" in {
+      player.toString should be("Marcel")
+    }
     "new" should {
       "have a name" in {
         player.name should be("Marcel")

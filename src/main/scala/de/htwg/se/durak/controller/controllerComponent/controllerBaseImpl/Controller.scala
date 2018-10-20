@@ -41,7 +41,7 @@ class Controller extends ControllerInterface with LazyLogging {
 
   var cardOnField = ArrayBuffer.empty[Card]
   var deck = Deck.instance()
-  var trumpCard: Card = determineTrump()
+  var trumpCard: Card = new Card("Joker", 0, "J")
   var line = scanner.nextLine()
   var line2 = scanner.nextLine()
 
@@ -50,6 +50,7 @@ class Controller extends ControllerInterface with LazyLogging {
     actualPlayer = playerInGame(0) //setActualPlayer()
     setDifficulty()
     deck.init()
+    trumpCard = determineTrump()
     cardsLeft = allCards + 1
     mixDeck(determineMixedDeck(), deck.deck.length)
     dealOut()
