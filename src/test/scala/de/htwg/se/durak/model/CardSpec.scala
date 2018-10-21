@@ -13,11 +13,17 @@ class CardSpec extends WordSpec with Matchers {
       "have a name" in {
         card.name should be("7 Piek")
       }
+      "have a toString form" in {
+        card.toString should be("7 Piek")
+      }
       "have a value" in {
         card.value should be(7)
       }
       "have a symbol" in {
         card.symbol should be("P")
+      }
+      "is set" in {
+        card.isSet should be(true)
       }
     }
   }

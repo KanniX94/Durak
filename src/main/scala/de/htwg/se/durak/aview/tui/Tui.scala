@@ -3,11 +3,11 @@ package de.htwg.se.durak.aview
 import java.awt.event.{KeyEvent, KeyListener}
 
 import com.typesafe.scalalogging.{LazyLogging, Logger}
-import de.htwg.se.durak.controller.controllerComponent.{ControllerInterface, FieldChanged, GameStatus}
+import de.htwg.se.durak.controller.controllerComponent.{ControllerInterface, GameStatus}
 import de.htwg.se.durak.model.FieldComponent.FieldInterface
 import de.htwg.se.durak.util.Utils
-
-class Tui(c: ControllerInterface, field: FieldInterface) extends LazyLogging {
+//, field: FieldInterface
+class Tui(c: ControllerInterface) extends LazyLogging {
   welcomePlayer()
 
   def welcomePlayer(): Unit = {
@@ -29,7 +29,7 @@ class Tui(c: ControllerInterface, field: FieldInterface) extends LazyLogging {
   }
 
   def keyTyped(e: KeyEvent): Unit = {
-    c.doAction(field, Utils.processKey(e.getExtendedKeyCode, e.getKeyChar))
+    //c.doAction(field, Utils.processKey(e.getExtendedKeyCode, e.getKeyChar))
   }
 
   var continue = true
@@ -37,7 +37,9 @@ class Tui(c: ControllerInterface, field: FieldInterface) extends LazyLogging {
   def interpret(input: String): Boolean = {
 
     input match {
+      case "start" => c.initialize()
       case "quit" => continue = false
+      case "save" => c.saveGame()
       case _ => {
 
       }
@@ -49,16 +51,12 @@ class Tui(c: ControllerInterface, field: FieldInterface) extends LazyLogging {
     print("Das Spiel beginnt nun.\n")
   }
 
-  def saveGame: Unit = {
+  def loadGame(): Unit = {
 
   }
 
-  def loadGame: Unit = {
-
-  }
-
-  def exit: Unit = {
+  def exit(): Unit = {
     print("Das Spiel wird nun beendet!\n")
-    exit
+    sys.exit()
   }
 }
