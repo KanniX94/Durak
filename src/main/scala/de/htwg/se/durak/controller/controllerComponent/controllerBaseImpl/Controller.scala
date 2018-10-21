@@ -11,7 +11,6 @@ import de.htwg.se.durak.model.fileIoComponent.FileIoInterface
 import play.api.libs.json.JsValue
 import de.htwg.se.durak.util.UndoManager
 
-import scala.util.control.Breaks._
 import com.typesafe.scalalogging.{LazyLogging, Logger}
 import de.htwg.se.durak.aview.gui.Gui
 import de.htwg.se.durak.model.FieldComponent.FieldInterface
@@ -36,6 +35,7 @@ class Controller extends ControllerInterface with LazyLogging {
   var tmpCard = new ArrayBuffer[Card]
   var overall = false
   var more = true
+  var legen = true
 
   val allCards = 31
   var cardsLeft = 0
@@ -49,7 +49,7 @@ class Controller extends ControllerInterface with LazyLogging {
 
   def initialize(): Unit = {
     determinePlayer()
-    actualPlayer = playerInGame(0) //setActualPlayer()
+    actualPlayer = playerInGame(1) //setActualPlayer()
     setDifficulty()
     deck.init()
     trumpCard = determineTrump()
@@ -72,33 +72,6 @@ class Controller extends ControllerInterface with LazyLogging {
     }
   }
 
-  /*def doAction(field: FieldInterface, key: String): Unit = {
-    doOtherActions(field, key)
-
-    if (!field.win && !field.lose) {
-      doGameAction(field, key)
-    }
-  }
-
-  def doOtherActions(field: FieldInterface, key: String): Unit = {
-    key match {
-      case "speichern" => {
-        fileIo.save("save.durak", field)
-      }
-      case "laden" => {
-        fileIo.load("save.durak", field)
-      }
-      case "undo" => {
-        fileIo.load("undo.durak", field)
-      }
-      case "beenden" =>
-        sys.exit()
-      case _ => {
-        fileIo.save("undo.durak", field)
-      }
-    }
-  }
-*/
   def gameLoop(): Unit = {
     print(trumpCard.name.split(" ").last + " ist Trumpf\n")
     while (true) {
@@ -119,8 +92,6 @@ class Controller extends ControllerInterface with LazyLogging {
         changeActualPlayer(actualPlayer)
         while (canBeat && playerInGame(1) == actualPlayer && !overall && more) {
           cpuBeat()
-          //changeActualPlayer(actualPlayer)
-          printPlayerCards()
           layFurtherCardOnBeatenCards()
         }
       } else {
@@ -150,7 +121,6 @@ class Controller extends ControllerInterface with LazyLogging {
       }
       if (!canBeat) {
         pullCard()
-        break()
       }
     }
   }
@@ -159,6 +129,7 @@ class Controller extends ControllerInterface with LazyLogging {
     val tmpField = cardOnField
     var breaker = false
     canBeat = true
+    legen = true
     while (canBeat && cardOnField.length > 0) {
       cantBeat()
       if (!canBeat) {
@@ -179,28 +150,30 @@ class Controller extends ControllerInterface with LazyLogging {
         }
         if (line == "pull") {
           pullCard()
+          legen = false
           canBeat = false
-          break()
         }
-        print("Mit welcher Karte moechtest du schlagen?\n")
-        for (cardFromHand <- 0 to playerInGame(0).cardOnHand.length - 1) {
-          print(cardFromHand + 1 + " = " + playerInGame(0).cardOnHand(cardFromHand).name + " | ")
-        }
-        print("\n")
-        line2 = scanner.nextLine()
-        while (line2.toInt < 1 || line2.toInt > actualPlayer.cardOnHand.length + 1) {
-          print("Du hast diese Karte nicht auf der Hand!\nProbiere es noch einmal..")
+        if (legen) {
+          print("Mit welcher Karte moechtest du schlagen?\n")
+          for (cardFromHand <- 0 to playerInGame(0).cardOnHand.length - 1) {
+            print(cardFromHand + 1 + " = " + playerInGame(0).cardOnHand(cardFromHand).name + " | ")
+          }
+          print("\n")
           line2 = scanner.nextLine()
-        }
-        if (canBeatCard(cardOnField(line.toInt - 1), playerInGame(0).cardOnHand(line2.toInt - 1))) {
-          print("Du hast " + cardOnField(line.toInt - 1) + " mit " + playerInGame(0).cardOnHand(line2.toInt - 1) + " geschlagen!\n")
-          beatenCard += cardOnField(line.toInt - 1)
-          beatenCard += playerInGame(0).cardOnHand(line2.toInt - 1)
-          cardOnField.remove(line.toInt - 1)
-          playerInGame(0).cardOnHand.remove(line2.toInt - 1)
-        } else {
-          print("Du kannst " + cardOnField(line.toInt - 1).name + " nicht mit "
-            + playerInGame(0).cardOnHand(line2.toInt - 1).name + " schlagen!\n")
+          while (line2.toInt < 1 || line2.toInt > actualPlayer.cardOnHand.length + 1) {
+            print("Du hast diese Karte nicht auf der Hand!\nProbiere es noch einmal..")
+            line2 = scanner.nextLine()
+          }
+          if (canBeatCard(cardOnField(line.toInt - 1), playerInGame(0).cardOnHand(line2.toInt - 1))) {
+            print("Du hast " + cardOnField(line.toInt - 1) + " mit " + playerInGame(0).cardOnHand(line2.toInt - 1) + " geschlagen!\n")
+            beatenCard += cardOnField(line.toInt - 1)
+            beatenCard += playerInGame(0).cardOnHand(line2.toInt - 1)
+            cardOnField.remove(line.toInt - 1)
+            playerInGame(0).cardOnHand.remove(line2.toInt - 1)
+          } else {
+            print("Du kannst " + cardOnField(line.toInt - 1).name + " nicht mit "
+              + playerInGame(0).cardOnHand(line2.toInt - 1).name + " schlagen!\n")
+          }
         }
       }
     }
@@ -246,6 +219,7 @@ class Controller extends ControllerInterface with LazyLogging {
     tmpRemoveField.clear()
     if (canBeat) {
       print(actualPlayer.name + " konnte alle Karten schlagen.\n")
+      changeActualPlayer(actualPlayer)
     }
     changeActualPlayer(actualPlayer)
 
@@ -380,6 +354,7 @@ class Controller extends ControllerInterface with LazyLogging {
 
   // Computergegner soll je nach schwierigkeitsgrad angreifen
   def cpuAttacks(): Unit = {
+    legen = true
     var canLay = 0
     tmpCard.clear()
     tmpCard ++= cardOnField
@@ -402,25 +377,24 @@ class Controller extends ControllerInterface with LazyLogging {
     var tmpRemoveHand = new ArrayBuffer[Card]()
     difficulty match {
       case 2 => {
-        breakable {
-          for (cardFromField <- tmpField) {
-            canLay = 0
-            for (i <- tmpHand) {
-              if (attackChance <= 2 && i.value == cardFromField.value) {
-                cardOnField.append(i)
-                tmpRemoveHand += i
-                //playerInGame(1).cardOnHand.remove(playerInGame(1).cardOnHand.indexOf(i))
-                canLay += 1
-              }
-            }
-            playerInGame(1).cardOnHand --= tmpRemoveHand
-            tmpRemoveHand.clear()
-            if (canLay == 0) {
-              breakable(Some)
+
+        for (cardFromField <- tmpField if (legen)) {
+          canLay = 0
+          for (i <- tmpHand) {
+            if (attackChance <= 2 && i.value == cardFromField.value) {
+              cardOnField.append(i)
+              tmpRemoveHand += i
+              //playerInGame(1).cardOnHand.remove(playerInGame(1).cardOnHand.indexOf(i))
+              canLay += 1
             }
           }
-
+          playerInGame(1).cardOnHand --= tmpRemoveHand
+          tmpRemoveHand.clear()
+          if (canLay == 0) {
+            legen = false
+          }
         }
+
       }
       case 3
       => for (cardFromField <- tmpCard) {
