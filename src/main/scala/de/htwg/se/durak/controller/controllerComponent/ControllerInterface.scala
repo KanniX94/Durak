@@ -7,6 +7,8 @@ import play.api.libs.json.JsValue
 import scala.swing.Reactor
 
 trait ControllerInterface {
+  def saveGame(): Unit
+
 
   def initialize()
 

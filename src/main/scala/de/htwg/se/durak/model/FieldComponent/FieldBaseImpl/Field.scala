@@ -6,36 +6,35 @@ import de.htwg.se.durak.model.PlayerInterface
 import scala.collection.mutable.ArrayBuffer
 import scala.xml.{Elem, Node}
 
-class Field(pH: ArrayBuffer[Card],eH: ArrayBuffer[Card], d: ArrayBuffer[Card], cF: ArrayBuffer[Card], pG: Array[Player], pA: Player) extends FieldInterface {
-
+class Field extends FieldInterface {
   def toXml: Elem = {
-    <Field>
+    return <Field>
       <playerInGame>
         <player>
-          {serializePlayer(pG)}
+          {serializePlayer(this.playerInGame)}
         </player>
       </playerInGame>
       <actualPlayer>
-        {pA}
+        {this.actualPlayer}
       </actualPlayer>
       <playerCardOnHand>
         <card>
-          {serializeCards(pH)}
+          {serializeCards(this.playerCardOnHand)}
         </card>
       </playerCardOnHand>
       <enemyCardOnHand>
         <card>
-          {serializeCards(eH)}
+          {serializeCards(this.enemyCardOnHand)}
         </card>
       </enemyCardOnHand>
       <deck>
         <card>
-          {serializeCards(d)}
+          {serializeCards(this.deck)}
         </card>
       </deck>
       <cardOnField>
         <card>
-          {serializeCards(cF)}
+          {serializeCards(this.cardOnField)}
         </card>
       </cardOnField>
     </Field>
@@ -44,7 +43,7 @@ class Field(pH: ArrayBuffer[Card],eH: ArrayBuffer[Card], d: ArrayBuffer[Card], c
   def serializePlayer(playerInGame: Array[Player]): String = {
     val stringBuilder = new StringBuilder
 
-    for (i <- playerInGame.indices) {
+    for (i <- 0 to playerInGame.length - 1) {
       stringBuilder.append(playerInGame(i).toString)
       if (i != (playerInGame.length - 1)) {
         stringBuilder.append(",")
@@ -56,8 +55,8 @@ class Field(pH: ArrayBuffer[Card],eH: ArrayBuffer[Card], d: ArrayBuffer[Card], c
   def serializeCards(cards: ArrayBuffer[Card]): String = {
     val stringBuilder = new StringBuilder
 
-    for (i <- cards.indices) {
-      stringBuilder.append(cards(i).toString())
+    for (i <- 0 to cards.length - 1) {
+      stringBuilder.append(cards(i).toString)
       if (i != (cards.length - 1)) {
         stringBuilder.append(",")
       }
@@ -82,20 +81,16 @@ class Field(pH: ArrayBuffer[Card],eH: ArrayBuffer[Card], d: ArrayBuffer[Card], c
     this.playerInGame = deserializePlayer((node \ "playerInGame").text)
 
     this.actualPlayer = new Player((node \ "actualPlayer").text)
-    returnToController()
-  }
-
-  def returnToController(): Unit = {
-
   }
 
   def deserializeCards(cards: String): ArrayBuffer[Card] = {
     val splitCards = cards.split(",")
-    val splitValues = splitCards.toString.split(" ")
+    val splitValues = splitCards(0).split(" ")
 
     val tmpCards = new ArrayBuffer[Card](splitCards.length)
-    for (i <- splitCards.indices) {
-      tmpCards(i) = Card(splitValues(0) + " " + splitValues(1), splitValues(0).toInt, splitValues(1))
+    for (i <- 0 to splitCards.length - 1) {
+      val card = Card(splitValues(0) + " " + splitValues(1), splitValues(0).toInt, splitValues(1).apply(0).toString)
+      tmpCards += card
     }
     tmpCards
   }
@@ -104,18 +99,18 @@ class Field(pH: ArrayBuffer[Card],eH: ArrayBuffer[Card], d: ArrayBuffer[Card], c
     val splitPlayer = player.split(",")
 
     val tmpPlayer = new Array[Player](splitPlayer.length)
-    for (i <- splitPlayer.indices) {
-      tmpPlayer(i) = Player(tmpPlayer(i).toString)
+    for (i <- 0 to splitPlayer.length - 1) {
+      tmpPlayer(i) = new Player(splitPlayer(i).toString)
     }
     tmpPlayer
   }
 
+  override var playerCardOnHand = ArrayBuffer.empty[Card]
+  override var enemyCardOnHand = ArrayBuffer.empty[Card]
+  override var deck = ArrayBuffer.empty[Card]
+  override var cardOnField = ArrayBuffer.empty[Card]
+  override var actualPlayer: Player = _
+  override var playerInGame = new Array[Player](2)
   override var win: Boolean = _
   override var lose: Boolean = _
-  override var playerCardOnHand: ArrayBuffer[Card] = _
-  override var enemyCardOnHand: ArrayBuffer[Card] = _
-  override var deck: ArrayBuffer[Card] = _
-  override var cardOnField: ArrayBuffer[Card] = _
-  override var actualPlayer: Player = _
-  override var playerInGame: Array[Player] = _
 }

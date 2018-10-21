@@ -6,7 +6,7 @@ import com.google.inject.{Guice, Inject}
 import net.codingwell.scalaguice.InjectorExtensions._
 import de.htwg.se.durak.controller.controllerComponent.ControllerInterface
 import de.htwg.se.durak.durakGameModule
-import de.htwg.se.durak.model.FieldComponent.FieldBaseImpl.{Card, Deck, Player}
+import de.htwg.se.durak.model.FieldComponent.FieldBaseImpl.{Card, Deck, Player, Field}
 import de.htwg.se.durak.model.fileIoComponent.FileIoInterface
 import play.api.libs.json.JsValue
 import de.htwg.se.durak.util.UndoManager
@@ -479,5 +479,10 @@ class Controller extends ControllerInterface with LazyLogging {
     for (i <- deck.deck) {
       print(i.name + "\n")
     }
+  }
+
+  def saveGame(): Unit = {
+    val field = new Field
+    field.playerInGame = this.playerInGame
   }
 }

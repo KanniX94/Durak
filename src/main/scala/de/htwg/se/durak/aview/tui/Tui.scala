@@ -39,6 +39,7 @@ class Tui(c: ControllerInterface) extends LazyLogging {
     input match {
       case "start" => c.initialize()
       case "quit" => continue = false
+      case "save" => c.saveGame()
       case _ => {
 
       }
@@ -48,10 +49,6 @@ class Tui(c: ControllerInterface) extends LazyLogging {
 
   def initialize(): Unit = {
     print("Das Spiel beginnt nun.\n")
-  }
-
-  def saveGame(): Unit = {
-
   }
 
   def loadGame(): Unit = {

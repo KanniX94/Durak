@@ -19,6 +19,9 @@ class PlayerSpec extends WordSpec with Matchers {
       "have a name" in {
         player.name should be("Marcel")
       }
+      "have no cards on hand" in {
+        player.cardOnHand should be(empty)
+      }
     }
   }
 }
