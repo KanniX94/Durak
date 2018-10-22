@@ -28,7 +28,7 @@ class DeckSpec extends WordSpec with Matchers {
     }
     "is empty when all cards left" in {
       deck.deck.clear()
-      deck.isEmpty() should be(true)
+      deck.deck.isEmpty should be(true)
     }
     "when cards left" when {
       val card = new Card("7 Piek", 7, "P")

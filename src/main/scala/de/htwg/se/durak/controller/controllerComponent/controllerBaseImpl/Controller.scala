@@ -1,21 +1,14 @@
 package de.htwg.se.durak.controller.controllerComponent.controllerBaseImpl
 
-import scala.io.StdIn.readLine
-import com.google.inject.name.Names
-import com.google.inject.{Guice, Inject}
-import net.codingwell.scalaguice.InjectorExtensions._
 import de.htwg.se.durak.controller.controllerComponent.ControllerInterface
-import de.htwg.se.durak.durakGameModule
-import de.htwg.se.durak.model.FieldComponent.FieldBaseImpl.{Card, Deck, Player, Field}
-import de.htwg.se.durak.model.fileIoComponent.FileIoInterface
-import play.api.libs.json.JsValue
-import de.htwg.se.durak.util.UndoManager
+import de.htwg.se.durak.model.FieldComponent.FieldBaseImpl.{Card, Deck, Field, Player}
 
-import com.typesafe.scalalogging.{LazyLogging, Logger}
+import com.typesafe.scalalogging.LazyLogging
 import de.htwg.se.durak.aview.gui.Gui
 import de.htwg.se.durak.model.FieldComponent.FieldInterface
 
 import scala.collection.mutable.ArrayBuffer
+import scala.util.Random
 
 class Controller extends ControllerInterface with LazyLogging {
 
@@ -23,9 +16,9 @@ class Controller extends ControllerInterface with LazyLogging {
   //val injector = Guice.createInjector(new durakGameModule)
   //val fileIo = injector.instance[FileIoInterface]
 
-  val r = scala.util.Random
+  val r: Random.type = scala.util.Random
   var playerInGame = new Array[Player](2)
-  var beatenCard = ArrayBuffer.empty[Card]
+  var beatenCard: ArrayBuffer[Card] = ArrayBuffer.empty[Card]
   var amountOfPlayer = 2
   var playerName = new Array[String](amountOfPlayer)
   playerInGame = new Array[Player](amountOfPlayer)
@@ -41,9 +34,9 @@ class Controller extends ControllerInterface with LazyLogging {
   var cardsLeft = 0
   val gui = new Gui()
 
-  var cardOnField = ArrayBuffer.empty[Card]
-  var deck = Deck.instance()
-  var trumpCard: Card = new Card("Start", 0, "")
+  var cardOnField: ArrayBuffer[Card] = ArrayBuffer.empty[Card]
+  var deck: Deck = Deck.instance()
+  var trumpCard: Card = Card("Start", 0, "")
   var line = ""
   var line2 = ""
 
@@ -62,13 +55,13 @@ class Controller extends ControllerInterface with LazyLogging {
 
   def determinePlayer(): Unit = {
     print("Spieler benennen..\n")
-    for (amount <- 0 to amountOfPlayer - 1) {
+    for (amount <- 0 until amountOfPlayer) {
       print("Wie soll der " + (amount + 1) + ". Spieler heissen?")
       line = scanner.nextLine()
       playerName(amount) = line
     }
-    for (player <- 0 to playerInGame.length - 1) {
-      playerInGame(player) = new Player(playerName(player))
+    for (player <- 0 until playerInGame.length) {
+      playerInGame(player) = Player(playerName(player))
     }
   }
 
@@ -111,7 +104,7 @@ class Controller extends ControllerInterface with LazyLogging {
 
   def cantBeat(): Unit = {
     var canBeat = false
-    for (cardFromField <- cardOnField if (canBeat)) {
+    for (cardFromField <- cardOnField if canBeat) {
       for (cardFromHand <- playerInGame(0).cardOnHand) {
         if (canBeatCard(cardFromField, cardFromHand)) {
           canBeat = true
@@ -130,20 +123,20 @@ class Controller extends ControllerInterface with LazyLogging {
     var breaker = false
     canBeat = true
     legen = true
-    while (canBeat && cardOnField.length > 0) {
+    while (canBeat && cardOnField.nonEmpty) {
       cantBeat()
       if (!canBeat) {
         breaker = !breaker
       }
       if (!breaker) {
         print("Welche Karte moechtest du schlagen? (Aufnehmen = pull)\n")
-        for (cardFromField <- 0 to cardOnField.length - 1) {
+        for (cardFromField <- 0 until cardOnField.length) {
           print(cardFromField + 1 + " = " + cardOnField(cardFromField).name + " | ")
         }
         print("\n")
         line = scanner.nextLine()
-        if (line.matches("[-+]?\\d+(\\.\\d+)?")) {
-          while (line.toInt < 1 && line.toInt > cardOnField.length + 1) {
+        if (line.matches("[-+]?\\d+(\\.\\d+)?") || line == "") {
+          while (line == "" || line.toInt < 1 && line.toInt > cardOnField.length + 1) {
             print("Diese Karte steht nicht zur Auswahl!\nProbiere es noch einmal..")
             line = scanner.nextLine()
           }
@@ -155,7 +148,7 @@ class Controller extends ControllerInterface with LazyLogging {
         }
         if (legen) {
           print("Mit welcher Karte moechtest du schlagen?\n")
-          for (cardFromHand <- 0 to playerInGame(0).cardOnHand.length - 1) {
+          for (cardFromHand <- 0 until playerInGame(0).cardOnHand.length) {
             print(cardFromHand + 1 + " = " + playerInGame(0).cardOnHand(cardFromHand).name + " | ")
           }
           print("\n")
@@ -193,10 +186,10 @@ class Controller extends ControllerInterface with LazyLogging {
     var tmpRemoveField = new ArrayBuffer[Card]()
     var breaker = false
     canBeat = true
-    for (cardFromField <- cardOnField if (canBeat)) {
+    for (cardFromField <- cardOnField if canBeat) {
       canBeat = false
       breaker = false
-      for (cardFromHand <- playerInGame(1).cardOnHand if (!breaker)) {
+      for (cardFromHand <- playerInGame(1).cardOnHand if !breaker) {
         if (canBeatCard(cardFromField, cardFromHand)) {
           print(playerInGame(1).name + " hat " + cardFromField + " mit "
             + cardFromHand + " geschlagen!\n")
@@ -247,11 +240,10 @@ class Controller extends ControllerInterface with LazyLogging {
         print("Moechtest du sie dazu legen? (j/n)\n")
         line = scanner.nextLine()
         line match {
-          case "ja" | "j" => {
+          case "ja" | "j" =>
             cardOnField += card
             tmpRemove += card
             overall = false
-          }
           case "nein" | "n" =>
             more = false
           case _ =>
@@ -262,6 +254,7 @@ class Controller extends ControllerInterface with LazyLogging {
   }
 
   def printCardOnField(): Unit = {
+    gui.displayMid(cardOnField)
     print("\nAuf dem Spielefeld liegen nun folgende Karten:\n")
     for (card <- cardOnField) {
       print(card.name + " | ")
@@ -314,7 +307,7 @@ class Controller extends ControllerInterface with LazyLogging {
 
   def chooseCardOnHand(): Unit = {
     print("Welche Karte moechtest du legen?\n")
-    for (i <- 0 to actualPlayer.cardOnHand.length - 1) {
+    for (i <- 0 until actualPlayer.cardOnHand.length) {
       print(i + 1 + " = " + actualPlayer.cardOnHand(i).name + " | ")
     }
     print("\n")
@@ -327,17 +320,18 @@ class Controller extends ControllerInterface with LazyLogging {
     actualPlayer.cardOnHand.remove(line.toInt - 1)
   }
 
-  def toJson: JsValue = ???
-
   // Karten an alle Spieler ausgeben (vor jeder Runde)
   def dealOut(): Unit = {
     for (i <- playerInGame) {
-      while (i.cardOnHand.length < 6 && !deck.isEmpty()) {
+      while (i.cardOnHand.length < 6 && !deck.isEmpty) {
         i.cardOnHand.append(deck.dealOut())
         cardsLeft -= 1
       }
-      if (deck.isEmpty()) {
+      if (deck.isEmpty) {
         print("Das Deck ist leer!\n")
+        gui.deck.deckBackLabel.setVisible(false)
+      } else {
+        gui.displayDeck(deck.length)
       }
     }
   }
@@ -376,9 +370,8 @@ class Controller extends ControllerInterface with LazyLogging {
     var tmpRemoveField = new ArrayBuffer[Card]()
     var tmpRemoveHand = new ArrayBuffer[Card]()
     difficulty match {
-      case 2 => {
-
-        for (cardFromField <- tmpField if (legen)) {
+      case 2 =>
+        for (cardFromField <- tmpField if legen) {
           canLay = 0
           for (i <- tmpHand) {
             if (attackChance <= 2 && i.value == cardFromField.value) {
@@ -394,10 +387,7 @@ class Controller extends ControllerInterface with LazyLogging {
             legen = false
           }
         }
-
-      }
-      case 3
-      => for (cardFromField <- tmpCard) {
+      case 3 => for (cardFromField <- tmpCard) {
         for (i <- tmpHand) {
           if (i.value == cardFromField.value) {
             cardOnField.append(i)
@@ -428,7 +418,7 @@ class Controller extends ControllerInterface with LazyLogging {
 
   // Mische das Deck
   def mixDeck(list: List[Int], count: Int): Unit = {
-    for (i <- 0 to count - 1) {
+    for (i <- 0 until count) {
       for (j <- list) {
         val tmpCard = deck.deck(i)
         deck.deck(i) = deck.deck(j)

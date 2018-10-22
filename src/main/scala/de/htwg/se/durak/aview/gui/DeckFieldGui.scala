@@ -1,13 +1,16 @@
 package de.htwg.se.durak.aview.gui
 
 import java.awt.GridLayout
+import javax.swing._
 
-import javax.swing.{BorderFactory, BoxLayout, JPanel}
-
-class DeckFieldGui extends JPanel{
+class DeckFieldGui extends JPanel with FieldGuiLabel {
   val deckPanel = new JPanel()
-  setLayout(new GridLayout(1, 3))
+  deckPanel.setLayout(new GridLayout(1, 4))
   setBorder(BorderFactory.createEtchedBorder())
 
+  var deckLabel = new JLabel("Deck: ")
+  var deckBackLabel = new JLabel(new ImageIcon("C:/Users/marce/durakGame/media/back.png"))
+  deckPanel.add(deckLabel)
+  deckPanel.add(deckBackLabel)
   add(deckPanel)
 }

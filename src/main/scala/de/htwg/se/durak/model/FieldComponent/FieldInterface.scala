@@ -1,8 +1,6 @@
 package de.htwg.se.durak.model.FieldComponent
 
 import de.htwg.se.durak.model.FieldComponent.FieldBaseImpl.{Card, Player}
-import de.htwg.se.durak.model
-
 import scala.xml.{Elem, Node}
 import scala.collection.mutable.ArrayBuffer
 
