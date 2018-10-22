@@ -29,6 +29,7 @@ class Controller extends ControllerInterface with LazyLogging {
   var overall = false
   var more = true
   var legen = true
+  var run = true
 
   val allCards = 31
   var cardsLeft = 0
@@ -42,10 +43,11 @@ class Controller extends ControllerInterface with LazyLogging {
 
   def initialize(): Unit = {
     determinePlayer()
-    actualPlayer = playerInGame(1) //setActualPlayer()
+    actualPlayer = setActualPlayer()
     setDifficulty()
     deck.init()
     trumpCard = determineTrump()
+    gui.setTrump(trumpCard)
     cardsLeft = allCards + 1
     mixDeck(determineMixedDeck(), deck.deck.length)
     dealOut()
@@ -67,15 +69,16 @@ class Controller extends ControllerInterface with LazyLogging {
 
   def gameLoop(): Unit = {
     print(trumpCard.name.split(" ").last + " ist Trumpf\n")
-    while (true) {
+    while (run) {
 
       cardOnField.clear()
       beatenCard.clear()
       dealOut()
+      gui.displayMid(cardOnField)
       gui.displayHand(playerInGame(0).cardOnHand, playerInGame(1).cardOnHand)
       print(actualPlayer.name + " ist an der Reihe!\n")
       printPlayerCards()
-      if (actualPlayer == playerInGame(0)) {
+      if (actualPlayer == playerInGame(0) && run) {
         chooseCardOnHand()
         layFurtherCard()
         printCardOnField()
@@ -83,7 +86,8 @@ class Controller extends ControllerInterface with LazyLogging {
         overall = false
         more = true
         changeActualPlayer(actualPlayer)
-        while (canBeat && playerInGame(1) == actualPlayer && !overall && more) {
+        while (run && canBeat && playerInGame(1) == actualPlayer && !overall && more) {
+          gui.displayMid(cardOnField)
           cpuBeat()
           layFurtherCardOnBeatenCards()
         }
@@ -135,7 +139,10 @@ class Controller extends ControllerInterface with LazyLogging {
         }
         print("\n")
         line = scanner.nextLine()
-        if (line.matches("[-+]?\\d+(\\.\\d+)?") || line == "") {
+        if (line == "back") {
+          run = false
+        }
+        if (run && (line.matches("[-+]?\\d+(\\.\\d+)?") || line == "")) {
           while (line == "" || line.toInt < 1 && line.toInt > cardOnField.length + 1) {
             print("Diese Karte steht nicht zur Auswahl!\nProbiere es noch einmal..")
             line = scanner.nextLine()
@@ -145,15 +152,17 @@ class Controller extends ControllerInterface with LazyLogging {
           pullCard()
           legen = false
           canBeat = false
+        } else if (line == "back") {
+          run = false
         }
-        if (legen) {
+        if (legen && run) {
           print("Mit welcher Karte moechtest du schlagen?\n")
           for (cardFromHand <- 0 until playerInGame(0).cardOnHand.length) {
             print(cardFromHand + 1 + " = " + playerInGame(0).cardOnHand(cardFromHand).name + " | ")
           }
           print("\n")
           line2 = scanner.nextLine()
-          while (line2.toInt < 1 || line2.toInt > actualPlayer.cardOnHand.length + 1) {
+          while (line == "" || line2.toInt < 1 || line2.toInt > actualPlayer.cardOnHand.length + 1) {
             print("Du hast diese Karte nicht auf der Hand!\nProbiere es noch einmal..")
             line2 = scanner.nextLine()
           }
@@ -163,6 +172,7 @@ class Controller extends ControllerInterface with LazyLogging {
             beatenCard += playerInGame(0).cardOnHand(line2.toInt - 1)
             cardOnField.remove(line.toInt - 1)
             playerInGame(0).cardOnHand.remove(line2.toInt - 1)
+            gui.displayMid(cardOnField)
           } else {
             print("Du kannst " + cardOnField(line.toInt - 1).name + " nicht mit "
               + playerInGame(0).cardOnHand(line2.toInt - 1).name + " schlagen!\n")
@@ -312,12 +322,16 @@ class Controller extends ControllerInterface with LazyLogging {
     }
     print("\n")
     line = scanner.nextLine()
-    while (line.toInt <= 0 && line.toInt > playerInGame(0).cardOnHand.length + 1) {
-      print("Du hast diese Karte nicht auf der Hand!\nProbiere es noch einmal..")
-      line = scanner.nextLine()
+    if (line == "back") run = false
+    if (run) {
+      while (line != "" && line.toInt <= 0 && line.toInt > playerInGame(0).cardOnHand.length + 1) {
+        print("Du hast diese Karte nicht auf der Hand!\nProbiere es noch einmal..")
+        line = scanner.nextLine()
+      }
+      cardOnField += actualPlayer.cardOnHand(line.toInt - 1)
+      actualPlayer.cardOnHand.remove(line.toInt - 1)
+      gui.displayMid(cardOnField)
     }
-    cardOnField += actualPlayer.cardOnHand(line.toInt - 1)
-    actualPlayer.cardOnHand.remove(line.toInt - 1)
   }
 
   // Karten an alle Spieler ausgeben (vor jeder Runde)
@@ -395,6 +409,7 @@ class Controller extends ControllerInterface with LazyLogging {
           }
         }
       }
+      case _ =>
     }
   }
 

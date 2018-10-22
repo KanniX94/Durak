@@ -46,6 +46,10 @@ class Gui() extends JFrame {
     }
   }
 
+  def setTrump(card: Card): Unit = {
+    deck.trumpLabel.setIcon(new ImageIcon("C:/Users/marce/durakGame/media/" + card.name + ".png"))
+  }
+
   def displayHand(cards: ArrayBuffer[Card], enemyCards: ArrayBuffer[Card]): Unit = {
     for(card <- cards) {
       player.labelArray(counter - 1).setIcon(new ImageIcon("C:/Users/marce/durakGame/media/" + card.name + ".png"))

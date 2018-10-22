@@ -10,7 +10,9 @@ class DeckFieldGui extends JPanel with FieldGuiLabel {
 
   var deckLabel = new JLabel("Deck: ")
   var deckBackLabel = new JLabel(new ImageIcon("C:/Users/marce/durakGame/media/back.png"))
+  var trumpLabel = new JLabel(new ImageIcon("C:/Users/marce/durakGame/media/back.png"))
   deckPanel.add(deckLabel)
   deckPanel.add(deckBackLabel)
+  deckPanel.add(trumpLabel)
   add(deckPanel)
 }
