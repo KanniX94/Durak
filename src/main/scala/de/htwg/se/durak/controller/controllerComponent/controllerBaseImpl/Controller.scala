@@ -30,6 +30,7 @@ class Controller extends ControllerInterface with LazyLogging {
   var more = true
   var legen = true
   var run = true
+  var back = false
 
   val allCards = 31
   var cardsLeft = 0
@@ -70,7 +71,7 @@ class Controller extends ControllerInterface with LazyLogging {
   def gameLoop(): Unit = {
     print(trumpCard.name.split(" ").last + " ist Trumpf\n")
     while (run) {
-
+      back = false
       cardOnField.clear()
       beatenCard.clear()
       dealOut()
@@ -104,6 +105,7 @@ class Controller extends ControllerInterface with LazyLogging {
         }
       }
     }
+    print("Zurueck zum Hauptmenue..\n")
   }
 
   def cantBeat(): Unit = {
@@ -127,7 +129,7 @@ class Controller extends ControllerInterface with LazyLogging {
     var breaker = false
     canBeat = true
     legen = true
-    while (canBeat && cardOnField.nonEmpty) {
+    while (canBeat && cardOnField.nonEmpty && !back) {
       cantBeat()
       if (!canBeat) {
         breaker = !breaker
@@ -141,12 +143,21 @@ class Controller extends ControllerInterface with LazyLogging {
         line = scanner.nextLine()
         if (line == "back") {
           run = false
+          back = true
         }
-        if (run && (line.matches("[-+]?\\d+(\\.\\d+)?") || line == "")) {
-          while (line == "" || line.toInt < 1 && line.toInt > cardOnField.length + 1) {
+        while (!back && run) {
+          line = scanner.nextLine()
+          if (line.toInt > 0 && line.toInt <= cardOnField.length + 1) {
+            back = true
+          } else if (line == "back") {
+            run = false
+            back = true
+          } else {
             print("Diese Karte steht nicht zur Auswahl!\nProbiere es noch einmal..")
-            line = scanner.nextLine()
           }
+        }
+
+        if (run && (line.matches("[-+]?\\d+(\\.\\d+)?") || line == "")) {
         }
         if (line == "pull") {
           pullCard()
@@ -156,15 +167,22 @@ class Controller extends ControllerInterface with LazyLogging {
           run = false
         }
         if (legen && run) {
+          back = false
           print("Mit welcher Karte moechtest du schlagen?\n")
           for (cardFromHand <- 0 until playerInGame(0).cardOnHand.length) {
             print(cardFromHand + 1 + " = " + playerInGame(0).cardOnHand(cardFromHand).name + " | ")
           }
           print("\n")
-          line2 = scanner.nextLine()
-          while (line == "" || line2.toInt < 1 || line2.toInt > actualPlayer.cardOnHand.length + 1) {
-            print("Du hast diese Karte nicht auf der Hand!\nProbiere es noch einmal..")
+          while (!back) {
             line2 = scanner.nextLine()
+            if (line2 == "" || line2.toInt > 0 && line2.toInt <= actualPlayer.cardOnHand.length + 1) {
+              back = true
+            } else if (line2 == "back") {
+              run = false
+              back = true
+            } else {
+              print("Du hast diese Karte nicht auf der Hand!\nProbiere es noch einmal..")
+            }
           }
           if (canBeatCard(cardOnField(line.toInt - 1), playerInGame(0).cardOnHand(line2.toInt - 1))) {
             print("Du hast " + cardOnField(line.toInt - 1) + " mit " + playerInGame(0).cardOnHand(line2.toInt - 1) + " geschlagen!\n")
@@ -264,12 +282,14 @@ class Controller extends ControllerInterface with LazyLogging {
   }
 
   def printCardOnField(): Unit = {
-    gui.displayMid(cardOnField)
-    print("\nAuf dem Spielefeld liegen nun folgende Karten:\n")
-    for (card <- cardOnField) {
-      print(card.name + " | ")
+    if (!back) {
+      gui.displayMid(cardOnField)
+      print("\nAuf dem Spielefeld liegen nun folgende Karten:\n")
+      for (card <- cardOnField) {
+        print(card.name + " | ")
+      }
+      print("\n")
     }
-    print("\n")
   }
 
   def changeActualPlayer(actPlayer: Player): Unit = {
@@ -322,7 +342,10 @@ class Controller extends ControllerInterface with LazyLogging {
     }
     print("\n")
     line = scanner.nextLine()
-    if (line == "back") run = false
+    if (line == "back") {
+      run = false
+      back = true
+    }
     if (run) {
       while (line != "" && line.toInt <= 0 && line.toInt > playerInGame(0).cardOnHand.length + 1) {
         print("Du hast diese Karte nicht auf der Hand!\nProbiere es noch einmal..")

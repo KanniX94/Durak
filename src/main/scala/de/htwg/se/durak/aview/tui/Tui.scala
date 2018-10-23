@@ -7,7 +7,6 @@ import de.htwg.se.durak.controller.controllerComponent.{ControllerInterface, Gam
 import de.htwg.se.durak.model.FieldComponent.FieldInterface
 import de.htwg.se.durak.util.Utils
 
-//, field: FieldInterface
 class Tui(c: ControllerInterface) extends LazyLogging {
   welcomePlayer()
 
@@ -31,7 +30,9 @@ class Tui(c: ControllerInterface) extends LazyLogging {
   def interpret(input: String): Boolean = {
 
     input match {
-      case "start" => c.initialize()
+      case "start" =>
+        c.initialize()
+        welcomePlayer()
       case "exit" => continue = false
       case "save" => c.saveGame()
       case "load" =>
