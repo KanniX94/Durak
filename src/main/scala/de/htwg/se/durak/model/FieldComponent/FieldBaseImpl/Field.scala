@@ -43,7 +43,7 @@ class Field extends FieldInterface {
   def serializePlayer(playerInGame: Array[Player]): String = {
     val stringBuilder = new StringBuilder
 
-    for (i <- 0 to playerInGame.length - 1) {
+    for (i <- 0 until playerInGame.length) {
       stringBuilder.append(playerInGame(i).toString)
       if (i != (playerInGame.length - 1)) {
         stringBuilder.append(",")
@@ -55,7 +55,7 @@ class Field extends FieldInterface {
   def serializeCards(cards: ArrayBuffer[Card]): String = {
     val stringBuilder = new StringBuilder
 
-    for (i <- 0 to cards.length - 1) {
+    for (i <- 0 until cards.length) {
       stringBuilder.append(cards(i).toString)
       if (i != (cards.length - 1)) {
         stringBuilder.append(",")
@@ -80,7 +80,7 @@ class Field extends FieldInterface {
     this.playerInGame = new Array[Player](2)
     this.playerInGame = deserializePlayer((node \ "playerInGame").text)
 
-    this.actualPlayer = new Player((node \ "actualPlayer").text)
+    this.actualPlayer = Player((node \ "actualPlayer").text)
   }
 
   def deserializeCards(cards: String): ArrayBuffer[Card] = {
@@ -88,7 +88,7 @@ class Field extends FieldInterface {
     val splitValues = splitCards(0).split(" ")
 
     val tmpCards = new ArrayBuffer[Card](splitCards.length)
-    for (i <- 0 to splitCards.length - 1) {
+    for (i <- 0 until splitCards.length) {
       val card = Card(splitValues(0) + " " + splitValues(1), splitValues(0).toInt, splitValues(1).apply(0).toString)
       tmpCards += card
     }
@@ -99,16 +99,16 @@ class Field extends FieldInterface {
     val splitPlayer = player.split(",")
 
     val tmpPlayer = new Array[Player](splitPlayer.length)
-    for (i <- 0 to splitPlayer.length - 1) {
-      tmpPlayer(i) = new Player(splitPlayer(i).toString)
+    for (i <- 0 until splitPlayer.length) {
+      tmpPlayer(i) = Player(splitPlayer(i))
     }
     tmpPlayer
   }
 
-  override var playerCardOnHand = ArrayBuffer.empty[Card]
-  override var enemyCardOnHand = ArrayBuffer.empty[Card]
-  override var deck = ArrayBuffer.empty[Card]
-  override var cardOnField = ArrayBuffer.empty[Card]
+  override var playerCardOnHand: ArrayBuffer[Card] = ArrayBuffer.empty[Card]
+  override var enemyCardOnHand: ArrayBuffer[Card] = ArrayBuffer.empty[Card]
+  override var deck: ArrayBuffer[Card] = ArrayBuffer.empty[Card]
+  override var cardOnField: ArrayBuffer[Card] = ArrayBuffer.empty[Card]
   override var actualPlayer: Player = _
   override var playerInGame = new Array[Player](2)
   override var win: Boolean = _

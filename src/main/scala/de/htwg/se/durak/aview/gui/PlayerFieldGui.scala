@@ -2,38 +2,9 @@ package de.htwg.se.durak.aview.gui
 
 import javax.swing._
 
-import scala.collection.mutable.ArrayBuffer
-
-class PlayerFieldGui extends JPanel{
+class PlayerFieldGui extends JPanel with FieldGuiLabel {
   val playerPanel = new JPanel()
 
-  var label1 = new JLabel()
-  var label2 = new JLabel()
-  var label3 = new JLabel()
-  var label5 = new JLabel()
-  var label4 = new JLabel()
-  var label6 = new JLabel()
-  var label7 = new JLabel()
-  var label8 = new JLabel()
-  var label9 = new JLabel()
-  var label10 = new JLabel()
-
-  var labelArray: ArrayBuffer[JLabel] = new ArrayBuffer[JLabel]()
-
-  fillLabel()
-
-  def fillLabel(): Unit = {
-    labelArray += label1
-    labelArray += label2
-    labelArray += label3
-    labelArray += label4
-    labelArray += label5
-    labelArray += label6
-    labelArray += label7
-    labelArray += label8
-    labelArray += label9
-    labelArray += label10
-  }
   playerPanel.setLayout(new BoxLayout(playerPanel, BoxLayout.X_AXIS))
   playerPanel.setBorder(BorderFactory.createEtchedBorder())
   playerPanel.add(label1)
@@ -46,6 +17,27 @@ class PlayerFieldGui extends JPanel{
   playerPanel.add(label8)
   playerPanel.add(label9)
   playerPanel.add(label10)
-
+  playerPanel.add(label11)
+  playerPanel.add(label12)
+  playerPanel.add(label13)
+  playerPanel.add(label14)
+  playerPanel.add(label15)
+  playerPanel.add(label16)
+  playerPanel.add(label17)
+  playerPanel.add(label18)
+  playerPanel.add(label19)
+  playerPanel.add(label20)
+  playerPanel.add(label21)
+  playerPanel.add(label22)
+  playerPanel.add(label23)
+  playerPanel.add(label24)
+  playerPanel.add(label25)
+  playerPanel.add(label26)
+  playerPanel.add(label27)
+  playerPanel.add(label28)
+  playerPanel.add(label29)
+  playerPanel.add(label30)
+  playerPanel.add(label31)
+  playerPanel.add(label32)
   add(playerPanel)
 }
