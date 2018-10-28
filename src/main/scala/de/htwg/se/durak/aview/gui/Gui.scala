@@ -39,9 +39,6 @@ class Gui() extends JFrame {
   }
 
   def clearLabel(): Unit = {
-    for(label <- cardOnField.labelArray) {
-      label.setIcon(new ImageIcon())
-    }
     for(label <- player.labelArray) {
       label.setIcon(new ImageIcon())
     }
@@ -51,7 +48,9 @@ class Gui() extends JFrame {
   }
 
   def displayMid(cards: ArrayBuffer[Card]): Unit = {
-    clearLabel()
+    for(label <- cardOnField.labelArray) {
+      label.setIcon(new ImageIcon())
+    }
     for(card <- cards) {
       cardOnField.labelArray(counter).setIcon(new ImageIcon("C:/Users/chris/IdeaProjects/Durak/media/" + card.name + ".png"))
       counter += 1
