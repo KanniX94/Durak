@@ -42,6 +42,9 @@ class DeckSpec extends WordSpec with Matchers {
         deck.deck += card
         deck.length should not be(0)
       }
+      "deck is not empty" in {
+        deck.isEmpty should be (false)
+      }
     }
 
   }
