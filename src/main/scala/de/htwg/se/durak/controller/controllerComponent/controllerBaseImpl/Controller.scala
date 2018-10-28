@@ -23,7 +23,6 @@ class Controller extends ControllerInterface with LazyLogging {
   var playerName = new Array[String](amountOfPlayer)
   playerInGame = new Array[Player](amountOfPlayer)
   var actualPlayer: Player = _
-  var difficulty = 0
   var canBeat = true
   var tmpCard = new ArrayBuffer[Card]
   var overall = false
@@ -45,7 +44,6 @@ class Controller extends ControllerInterface with LazyLogging {
   def initialize(): Unit = {
     determinePlayer()
     actualPlayer = setActualPlayer()
-    setDifficulty()
     deck.init()
     trumpCard = determineTrump()
     gui.setTrump(trumpCard)
@@ -63,6 +61,7 @@ class Controller extends ControllerInterface with LazyLogging {
       line = scanner.nextLine()
       playerName(amount) = line
     }
+    print("\n")
     for (player <- 0 until playerInGame.length) {
       playerInGame(player) = Player(playerName(player))
     }
@@ -379,16 +378,6 @@ class Controller extends ControllerInterface with LazyLogging {
     }
   }
 
-  // Schwierigkeitsgrad fuer den Computergegner
-  def setDifficulty(): Unit = {
-    print("Wie agressiv sollen die Gegner sein? (1 - 3)\n")
-    var line = scanner.nextLine()
-    while (line.toInt < 1 || line.toInt > 3) {
-      line = scanner.nextLine()
-    }
-    difficulty = line.toInt
-  }
-
   // Computergegner soll je nach schwierigkeitsgrad angreifen
   def cpuAttacks(): Unit = {
     legen = true
@@ -412,33 +401,21 @@ class Controller extends ControllerInterface with LazyLogging {
     val tmpHand = playerInGame(1).cardOnHand
     var tmpRemoveField = new ArrayBuffer[Card]()
     var tmpRemoveHand = new ArrayBuffer[Card]()
-    difficulty match {
-      case 2 =>
-        for (cardFromField <- tmpField if legen) {
-          canLay = 0
-          for (i <- tmpHand) {
-            if (attackChance <= 2 && i.value == cardFromField.value) {
-              cardOnField.append(i)
-              tmpRemoveHand += i
-              //playerInGame(1).cardOnHand.remove(playerInGame(1).cardOnHand.indexOf(i))
-              canLay += 1
-            }
-          }
-          playerInGame(1).cardOnHand --= tmpRemoveHand
-          tmpRemoveHand.clear()
-          if (canLay == 0) {
-            legen = false
-          }
-        }
-      case 3 => for (cardFromField <- tmpCard) {
-        for (i <- tmpHand) {
-          if (i.value == cardFromField.value) {
-            cardOnField.append(i)
-            playerInGame(1).cardOnHand.remove(playerInGame(1).cardOnHand.indexOf(i))
-          }
+    for (cardFromField <- tmpField if legen) {
+      canLay = 0
+      for (i <- tmpHand) {
+        if (attackChance <= 2 && i.value == cardFromField.value) {
+          cardOnField.append(i)
+          tmpRemoveHand += i
+          //playerInGame(1).cardOnHand.remove(playerInGame(1).cardOnHand.indexOf(i))
+          canLay += 1
         }
       }
-      case _ =>
+      playerInGame(1).cardOnHand --= tmpRemoveHand
+      tmpRemoveHand.clear()
+      if (canLay == 0) {
+        legen = false
+      }
     }
   }
 
@@ -481,15 +458,6 @@ class Controller extends ControllerInterface with LazyLogging {
     deck.deck.remove(tmp)
     deck.deck += tmpCard
     deck.deck.last
-  }
-
-  // ONLY FOR CHEATING!
-
-  def printDeck(): Unit = {
-    print("Im aktuellen Deck sind noch folgende Karten\n")
-    for (i <- deck.deck) {
-      print(i.name + "\n")
-    }
   }
 
   def saveGame(): Unit = {
