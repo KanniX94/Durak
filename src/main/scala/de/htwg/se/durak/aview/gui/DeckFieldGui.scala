@@ -4,6 +4,7 @@ import java.awt.GridLayout
 import javax.swing._
 
 class DeckFieldGui extends JPanel with FieldGuiLabel {
+
   val deckPanel = new JPanel()
   deckPanel.setLayout(new GridLayout(1, 4))
   setBorder(BorderFactory.createEtchedBorder())
