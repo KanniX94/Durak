@@ -1,5 +1,7 @@
 [![Coverage Status](https://coveralls.io/repos/github/KanniX94/Durak/badge.svg?branch=master)](https://coveralls.io/github/KanniX94/Durak?branch=master)
 
+[![Build Status](https://travis-ci.com/KanniX94/Durak.svg?branch=master)](https://travis-ci.com/KanniX94/Durak)
+
 # Htwg Scala Seed Project 
 =====================================================
 ## the easiest way to start a project for the lecture SE

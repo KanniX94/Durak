@@ -67,7 +67,7 @@ class Deck private() extends DeckInterface[Card] {
 
   def length: Int = deck.length
 
-  def isEmpty(): Boolean = deck.size == 0
+  def isEmpty: Boolean = deck.size == 0
 
   // ziehe naechste Karte vom Deck und uebergebe sie dem Player
   def dealOut(): Card = {

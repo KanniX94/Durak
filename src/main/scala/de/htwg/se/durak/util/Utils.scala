@@ -24,7 +24,7 @@ object Utils {
       "redo"
     } else if (k1 == 80 || k2 == 'p') {
       "schlucken"
-    } else if (k1 == 13) {
+    } else if (k1 == 13 || k2 == 'b') {
       "angreifen"
     } else {
       ""

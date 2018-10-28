@@ -6,26 +6,17 @@ import com.typesafe.scalalogging.{LazyLogging, Logger}
 import de.htwg.se.durak.controller.controllerComponent.{ControllerInterface, GameStatus}
 import de.htwg.se.durak.model.FieldComponent.FieldInterface
 import de.htwg.se.durak.util.Utils
-//, field: FieldInterface
+
 class Tui(c: ControllerInterface) extends LazyLogging {
   welcomePlayer()
 
   def welcomePlayer(): Unit = {
     print("Willkommen zu Durak!\n")
     print("Du kannst folgende Aktionen durchfuehren:\n")
-    print("A = Kartenindex nach links\n")
-    print("D = Kartenindex nach rechts\n")
-    print("W = Schlagen\n")
-    print("S = Schieben\n")
-    print("P = Aufnehmen\n")
-    print("N = Nichts unternehmen\n")
-    print("X = Spiel beenden\n")
-    print("Z = Spiel speichern\n")
-    print("L = Spiel laden\n")
-    print("U = Undo\n")
-    print("R = Redo\n")
-    print("Das Spiel beginnt nun...\n")
-    print("(ง ͠° ͟ل͜ ͡°)ง\n\n")
+    print("start = Starte ein neues Spiel\n")
+    print("save = Speichere deinen Spielstand\n")
+    print("load = Lade einen Spielstand\n")
+    print("exit = Beende das Spiel\n")
   }
 
   def keyTyped(e: KeyEvent): Unit = {
@@ -37,29 +28,20 @@ class Tui(c: ControllerInterface) extends LazyLogging {
   def interpret(input: String): Boolean = {
 
     input match {
-      case "start" => c.initialize()
-      case "quit" => continue = false
-      case _ => {
-
-      }
+      case "start" =>
+        print("Das Spiel beginnt nun...\n")
+        print("(ง ͠° ͟ل͜ ͡°)ง\n\n")
+        c.initialize()
+        welcomePlayer()
+      case "exit" => continue = false
+      case "save" => c.saveGame()
+      case "load" =>
+      case _ =>
     }
     continue
   }
 
   def initialize(): Unit = {
     print("Das Spiel beginnt nun.\n")
-  }
-
-  def saveGame(): Unit = {
-
-  }
-
-  def loadGame(): Unit = {
-
-  }
-
-  def exit(): Unit = {
-    print("Das Spiel wird nun beendet!\n")
-    sys.exit()
   }
 }

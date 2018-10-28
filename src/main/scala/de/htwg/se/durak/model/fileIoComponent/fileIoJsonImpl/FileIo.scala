@@ -1,3 +1,5 @@
+package de.htwg.se.durak.model.fileIoComponent.fileIoJsonImpl
+
 import java.io.{BufferedWriter, File, FileWriter}
 
 import com.google.gson.Gson
