@@ -38,26 +38,40 @@ class Gui() extends JFrame {
     deck.deckLabel.setText("Deck: " + count)
   }
 
+  def clearLabel(): Unit = {
+    for(label <- cardOnField.labelArray) {
+      label.setIcon(new ImageIcon())
+    }
+    for(label <- player.labelArray) {
+      label.setIcon(new ImageIcon())
+    }
+    for(label <- enemy.labelArray) {
+      label.setIcon(new ImageIcon())
+    }
+  }
+
   def displayMid(cards: ArrayBuffer[Card]): Unit = {
+    clearLabel()
     for(card <- cards) {
-      cardOnField.labelArray(counter - 1).setIcon(new ImageIcon("C:/Users/marce/durakGame/media/" + card.name + ".png"))
+      cardOnField.labelArray(counter).setIcon(new ImageIcon("C:/Users/chris/IdeaProjects/Durak/media/" + card.name + ".png"))
       counter += 1
     }
     counter = 1
   }
 
   def setTrump(card: Card): Unit = {
-    deck.trumpLabel.setIcon(new ImageIcon("C:/Users/marce/durakGame/media/" + card.name + ".png"))
+    deck.trumpLabel.setIcon(new ImageIcon("C:/Users/chris/IdeaProjects/Durak/media/" + card.name + ".png"))
   }
 
   def displayHand(cards: ArrayBuffer[Card], enemyCards: ArrayBuffer[Card]): Unit = {
+    clearLabel()
     for(card <- cards) {
-      player.labelArray(counter - 1).setIcon(new ImageIcon("C:/Users/marce/durakGame/media/" + card.name + ".png"))
+      player.labelArray(counter).setIcon(new ImageIcon("C:/Users/chris/IdeaProjects/Durak/media/" + card.name + ".png"))
       counter += 1
     }
     counter = 1
     for(card <- enemyCards) {
-      enemy.labelArray(counter - 1).setIcon(new ImageIcon("C:/Users/marce/durakGame/media/" + card.name + ".png"))
+      enemy.labelArray(counter).setIcon(new ImageIcon("C:/Users/chris/IdeaProjects/Durak/media/" + card.name + ".png"))
       counter += 1
     }
     counter = 1
