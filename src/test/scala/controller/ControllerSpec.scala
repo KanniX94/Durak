@@ -1,6 +1,9 @@
 package de.htwg.se.durak.model
 
+import com.google.inject.Guice
+import de.htwg.se.durak.controller.controllerComponent.ControllerInterface
 import de.htwg.se.durak.controller.controllerComponent.controllerBaseImpl.Controller
+import de.htwg.se.durak.durakGameModule
 import org.scalatest._
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
