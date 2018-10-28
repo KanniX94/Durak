@@ -81,6 +81,7 @@ class Controller extends ControllerInterface with LazyLogging {
       printPlayerCards()
       if (actualPlayer == playerInGame(0) && run) {
         chooseCardOnHand()
+        gui.displayHand(playerInGame(0).cardOnHand, playerInGame(1).cardOnHand)
         layFurtherCard()
         printCardOnField()
         canBeat = true
@@ -90,15 +91,19 @@ class Controller extends ControllerInterface with LazyLogging {
         while (run && canBeat && playerInGame(1) == actualPlayer && !overall && more) {
           gui.displayMid(cardOnField)
           cpuBeat()
+          gui.displayHand(playerInGame(0).cardOnHand, playerInGame(1).cardOnHand)
           layFurtherCardOnBeatenCards()
+          gui.displayHand(playerInGame(0).cardOnHand, playerInGame(1).cardOnHand)
         }
       } else {
         canBeat = true
         while (canBeat && actualPlayer == playerInGame(1)) {
           cpuAttacks()
+          gui.displayHand(playerInGame(0).cardOnHand, playerInGame(1).cardOnHand)
           changeActualPlayer(actualPlayer)
           printCardOnField()
           defend()
+          gui.displayHand(playerInGame(0).cardOnHand, playerInGame(1).cardOnHand)
           if (!canBeat) {
             changeActualPlayer(actualPlayer)
           }
@@ -277,6 +282,7 @@ class Controller extends ControllerInterface with LazyLogging {
       }
     }
     playerInGame(0).cardOnHand --= tmpRemove
+    gui.displayHand(playerInGame(0).cardOnHand, playerInGame(1).cardOnHand)
   }
 
   def printCardOnField(): Unit = {
