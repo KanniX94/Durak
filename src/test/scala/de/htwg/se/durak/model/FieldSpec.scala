@@ -15,6 +15,7 @@ class FieldSpec extends WordSpec with Matchers {
     field.playerInGame(1) = Player("Christoph")
     field.actualPlayer = field.playerInGame(0)
     field.playerCardOnHand += Card("7 Piek", 7 , "P")
+    field.playerCardOnHand += Card("8 Piek", 8, "P")
     field.enemyCardOnHand += Card("7 Herz", 7 , "H")
     field.deck += Card("7 Caro", 7, "C")
     "new" should {
@@ -22,7 +23,7 @@ class FieldSpec extends WordSpec with Matchers {
         field.serializePlayer(field.playerInGame) should be("Marcel,Christoph")
       }
       "have a serializeCards method" in {
-        field.serializeCards(field.playerCardOnHand) should be("7 Piek")
+        field.serializeCards(field.playerCardOnHand) should be("7 Piek,8 Piek")
       }
       "have a deserializePlayer method" in {
         val playerInGame = new Array[Player](2)
