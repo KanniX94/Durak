@@ -39,11 +39,11 @@ class Gui() extends JFrame {
   }
 
   def displayMid(cards: ArrayBuffer[Card]): Unit = {
-    var counter = 0
     for(card <- cards) {
-      cardOnField.labelArray(counter).setIcon(new ImageIcon("C:/Users/marce/durakGame/media/" + card.name + ".png"))
+      cardOnField.labelArray(counter - 1).setIcon(new ImageIcon("C:/Users/marce/durakGame/media/" + card.name + ".png"))
       counter += 1
     }
+    counter = 1
   }
 
   def setTrump(card: Card): Unit = {

@@ -291,6 +291,7 @@ class Controller extends ControllerInterface with LazyLogging {
   }
 
   def changeActualPlayer(actPlayer: Player): Unit = {
+    gui.displayMid(cardOnField)
     if (actPlayer == playerInGame(0)) {
       actualPlayer = playerInGame(1)
     } else {
