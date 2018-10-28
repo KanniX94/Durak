@@ -17,8 +17,6 @@ class Tui(c: ControllerInterface) extends LazyLogging {
     print("save = Speichere deinen Spielstand\n")
     print("load = Lade einen Spielstand\n")
     print("exit = Beende das Spiel\n")
-    print("Das Spiel beginnt nun...\n")
-    print("(ง ͠° ͟ل͜ ͡°)ง\n\n")
   }
 
   def keyTyped(e: KeyEvent): Unit = {
@@ -31,6 +29,8 @@ class Tui(c: ControllerInterface) extends LazyLogging {
 
     input match {
       case "start" =>
+        print("Das Spiel beginnt nun...\n")
+        print("(ง ͠° ͟ل͜ ͡°)ง\n\n")
         c.initialize()
         welcomePlayer()
       case "exit" => continue = false

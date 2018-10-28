@@ -140,31 +140,28 @@ class Controller extends ControllerInterface with LazyLogging {
           print(cardFromField + 1 + " = " + cardOnField(cardFromField).name + " | ")
         }
         print("\n")
-        line = scanner.nextLine()
-        if (line == "back") {
-          run = false
-          back = true
-        }
-        while (!back && run) {
+        var correct = false
+
+        while (legen && !back && run && !correct) {
           line = scanner.nextLine()
-          if (line.toInt > 0 && line.toInt <= cardOnField.length + 1) {
-            back = true
+          if (line == "pull") {
+            pullCard()
+            legen = false
+            canBeat = false
           } else if (line == "back") {
             run = false
             back = true
-          } else {
-            print("Diese Karte steht nicht zur Auswahl!\nProbiere es noch einmal..")
           }
-        }
-
-        if (run && (line.matches("[-+]?\\d+(\\.\\d+)?") || line == "")) {
-        }
-        if (line == "pull") {
-          pullCard()
-          legen = false
-          canBeat = false
-        } else if (line == "back") {
-          run = false
+          if (legen) {
+            if (line.toInt > 0 && line.toInt <= cardOnField.length + 1) {
+              correct = true
+            } else if (line == "back") {
+              run = false
+              back = true
+            } else {
+              print("Diese Karte steht nicht zur Auswahl!\nProbiere es noch einmal..")
+            }
+          }
         }
         if (legen && run) {
           back = false
@@ -175,25 +172,26 @@ class Controller extends ControllerInterface with LazyLogging {
           print("\n")
           while (!back) {
             line2 = scanner.nextLine()
-            if (line2 == "" || line2.toInt > 0 && line2.toInt <= actualPlayer.cardOnHand.length + 1) {
-              back = true
-            } else if (line2 == "back") {
+            if (line2 == "back") {
               run = false
               back = true
+            } else if (line2 == "" || line2.toInt > 0 && line2.toInt <= actualPlayer.cardOnHand.length + 1) {
+              if (canBeatCard(cardOnField(line.toInt - 1), playerInGame(0).cardOnHand(line2.toInt - 1))) {
+                print("Du hast " + cardOnField(line.toInt - 1) + " mit " + playerInGame(0).cardOnHand(line2.toInt - 1) + " geschlagen!\n")
+                beatenCard += cardOnField(line.toInt - 1)
+                beatenCard += playerInGame(0).cardOnHand(line2.toInt - 1)
+                cardOnField.remove(line.toInt - 1)
+                playerInGame(0).cardOnHand.remove(line2.toInt - 1)
+                gui.displayMid(cardOnField)
+                back = true
+              } else {
+                print("Du kannst " + cardOnField(line.toInt - 1).name + " nicht mit "
+                  + playerInGame(0).cardOnHand(line2.toInt - 1).name + " schlagen!\n")
+                print("Probiere es noch einmal!\n")
+              }
             } else {
               print("Du hast diese Karte nicht auf der Hand!\nProbiere es noch einmal..")
             }
-          }
-          if (canBeatCard(cardOnField(line.toInt - 1), playerInGame(0).cardOnHand(line2.toInt - 1))) {
-            print("Du hast " + cardOnField(line.toInt - 1) + " mit " + playerInGame(0).cardOnHand(line2.toInt - 1) + " geschlagen!\n")
-            beatenCard += cardOnField(line.toInt - 1)
-            beatenCard += playerInGame(0).cardOnHand(line2.toInt - 1)
-            cardOnField.remove(line.toInt - 1)
-            playerInGame(0).cardOnHand.remove(line2.toInt - 1)
-            gui.displayMid(cardOnField)
-          } else {
-            print("Du kannst " + cardOnField(line.toInt - 1).name + " nicht mit "
-              + playerInGame(0).cardOnHand(line2.toInt - 1).name + " schlagen!\n")
           }
         }
       }
@@ -319,6 +317,7 @@ class Controller extends ControllerInterface with LazyLogging {
     cardOnField.clear()
     beatenCard.clear()
     print(actualPlayer.name + " muss alle Karten aufnehmen!\n")
+    gui.displayMid(cardOnField)
   }
 
   // Karten des menschlichen Spielers ausgeben
@@ -471,7 +470,10 @@ class Controller extends ControllerInterface with LazyLogging {
   def determineTrump(): Card = {
     val r = scala.util.Random
     val tmp = r.nextInt(deck.deck.length - 1)
-    deck.deck(tmp)
+    val tmpCard = deck.deck(tmp)
+    deck.deck.remove(tmp)
+    deck.deck += tmpCard
+    deck.deck.last
   }
 
   // ONLY FOR CHEATING!

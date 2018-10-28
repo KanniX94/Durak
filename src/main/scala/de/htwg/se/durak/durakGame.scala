@@ -13,6 +13,7 @@ object durakGame {
   def main(args: Array[String]): Unit = {
     while (tui.interpret(readLine())) {}
     print("Das Spiel wird beendet!")
+    sys.exit(0)
     // Controller zum Objekt machen...statt class
     // Controller.initialize()
   }

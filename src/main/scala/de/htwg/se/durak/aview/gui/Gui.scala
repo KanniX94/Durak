@@ -57,7 +57,7 @@ class Gui() extends JFrame {
     }
     counter = 1
     for(card <- enemyCards) {
-      enemy.labelArray(counter - 1).setIcon(new ImageIcon("C:/Users/marce/durakGame/media/back.png"))
+      enemy.labelArray(counter - 1).setIcon(new ImageIcon("C:/Users/marce/durakGame/media/" + card.name + ".png"))
       counter += 1
     }
     counter = 1
