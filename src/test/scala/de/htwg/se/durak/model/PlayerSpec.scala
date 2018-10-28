@@ -22,6 +22,12 @@ class PlayerSpec extends WordSpec with Matchers {
       "have no cards on hand" in {
         player.cardOnHand should be(empty)
       }
+      "have cards on hand" in {
+        val ab = new ArrayBuffer[Card]()
+        ab.insert(0, Card("7 Piek", 7, "P"))
+        player.cardOnHand ++= ab
+        player.cardOnHand should not be(empty)
+      }
     }
   }
 }
